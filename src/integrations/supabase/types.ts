@@ -14,7 +14,90 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      page_analytics: {
+        Row: {
+          created_at: string
+          event: string
+          id: string
+          metadata: Json
+        }
+        Insert: {
+          created_at?: string
+          event: string
+          id?: string
+          metadata?: Json
+        }
+        Update: {
+          created_at?: string
+          event?: string
+          id?: string
+          metadata?: Json
+        }
+        Relationships: []
+      }
+      waitlist: {
+        Row: {
+          company: string | null
+          created_at: string
+          email: string
+          full_name: string
+          gpu_models: string | null
+          gpu_preference: string | null
+          hardware_type: string[] | null
+          heard_from: string | null
+          id: string
+          location_city: string | null
+          message: string | null
+          monthly_budget: string | null
+          monthly_power_cost_sar: number | null
+          num_units: number | null
+          phone: string | null
+          status: string
+          type: string
+          use_case: string | null
+        }
+        Insert: {
+          company?: string | null
+          created_at?: string
+          email: string
+          full_name: string
+          gpu_models?: string | null
+          gpu_preference?: string | null
+          hardware_type?: string[] | null
+          heard_from?: string | null
+          id?: string
+          location_city?: string | null
+          message?: string | null
+          monthly_budget?: string | null
+          monthly_power_cost_sar?: number | null
+          num_units?: number | null
+          phone?: string | null
+          status?: string
+          type: string
+          use_case?: string | null
+        }
+        Update: {
+          company?: string | null
+          created_at?: string
+          email?: string
+          full_name?: string
+          gpu_models?: string | null
+          gpu_preference?: string | null
+          hardware_type?: string[] | null
+          heard_from?: string | null
+          id?: string
+          location_city?: string | null
+          message?: string | null
+          monthly_budget?: string | null
+          monthly_power_cost_sar?: number | null
+          num_units?: number | null
+          phone?: string | null
+          status?: string
+          type?: string
+          use_case?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
