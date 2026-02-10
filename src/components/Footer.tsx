@@ -11,11 +11,11 @@ const Footer = () => {
       <div className="container mx-auto px-6 py-16">
         <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-5">
           <div className="lg:col-span-1">
-            <a href="/" className="font-mono text-lg font-bold text-foreground">
-              <span className="text-primary">NEXUS</span>DC
+            <a href="/" className="flex items-center">
+              <img src={dc1Logo} alt="DC1" className="h-12 w-auto" />
             </a>
             <p className="mt-3 text-sm text-muted-foreground">
-              Enterprise datacenter infrastructure for the modern web.
+              Decentralized compute marketplace. Power, Digitalized.
             </p>
           </div>
 
