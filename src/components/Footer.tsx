@@ -1,52 +1,64 @@
 import dc1Logo from "@/assets/dc1-logo.jpg";
+import { Twitter, Linkedin } from "lucide-react";
 
-const footerLinks = {
-  Solutions: ["Colocation", "Bare Metal", "Cloud", "GPU Clusters", "CDN"],
-  Company: ["About", "Careers", "Blog", "Press"],
-  Support: ["Documentation", "Status", "Contact", "SLA"],
-  Legal: ["Privacy", "Terms", "Compliance"],
-};
+const navLinks = [
+  { label: "How It Works", href: "#how-it-works" },
+  { label: "Advantages", href: "#advantages" },
+  { label: "Early Access", href: "#early-access" },
+  { label: "Contact", href: "mailto:hello@dc1.tech" },
+];
 
 const Footer = () => {
   return (
-    <footer className="border-t border-border/50 bg-card/30">
-      <div className="container mx-auto px-6 py-16">
-        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-5">
-          <div className="lg:col-span-1">
-            <a href="/" className="flex items-center">
-              <img src={dc1Logo} alt="DC1" className="h-12 w-auto" />
-            </a>
-            <p className="mt-3 text-sm text-muted-foreground">
-              Decentralized compute marketplace. Power, Digitalized.
-            </p>
+    <footer className="border-t border-border bg-background py-12">
+      <div className="container mx-auto px-6">
+        <div className="grid gap-10 sm:grid-cols-3">
+          {/* Left */}
+          <div>
+            <img src={dc1Logo} alt="DC1" className="h-10 w-auto" />
+            <p className="mt-3 text-sm text-muted-foreground">Power, Digitalized</p>
           </div>
 
-          {Object.entries(footerLinks).map(([title, links]) => (
-            <div key={title}>
-              <h4 className="font-mono text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                {title}
-              </h4>
-              <ul className="mt-4 space-y-2.5">
-                {links.map((link) => (
-                  <li key={link}>
-                    <a href="#" className="text-sm text-secondary-foreground hover:text-primary transition-colors">
-                      {link}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
+          {/* Center */}
+          <div className="flex flex-col items-start gap-2.5 sm:items-center">
+            {navLinks.map((link) => (
+              <a
+                key={link.href}
+                href={link.href}
+                className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+              >
+                {link.label}
+              </a>
+            ))}
+          </div>
+
+          {/* Right */}
+          <div className="flex items-start gap-4 sm:justify-end">
+            <a
+              href="https://x.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-muted-foreground transition-colors hover:text-foreground"
+              aria-label="Twitter / X"
+            >
+              <Twitter size={18} />
+            </a>
+            <a
+              href="https://linkedin.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-muted-foreground transition-colors hover:text-foreground"
+              aria-label="LinkedIn"
+            >
+              <Linkedin size={18} />
+            </a>
+          </div>
         </div>
 
-        <div className="mt-16 flex flex-col items-center justify-between gap-4 border-t border-border/50 pt-8 sm:flex-row">
-          <p className="text-xs text-muted-foreground">
-            © 2026 DC1. All rights reserved.
+        <div className="mt-10 border-t border-border pt-6 text-center">
+          <p className="text-sm text-muted-foreground">
+            &copy; 2026 HAAK Energy Solutions Company. All rights reserved.
           </p>
-          <div className="flex items-center gap-2">
-            <span className="h-1.5 w-1.5 rounded-full bg-terminal-ok animate-pulse-glow" />
-            <span className="text-xs text-muted-foreground">All systems operational</span>
-          </div>
         </div>
       </div>
     </footer>
