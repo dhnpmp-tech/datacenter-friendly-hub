@@ -41,7 +41,7 @@ const Footer = () => {
 
         <div className="mt-16 flex flex-col items-center justify-between gap-4 border-t border-border/50 pt-8 sm:flex-row">
           <p className="text-xs text-muted-foreground">
-            © 2026 NexusDC. All rights reserved.
+            © 2026 DC1. All rights reserved.
           </p>
           <div className="flex items-center gap-2">
             <span className="h-1.5 w-1.5 rounded-full bg-terminal-ok animate-pulse-glow" />
