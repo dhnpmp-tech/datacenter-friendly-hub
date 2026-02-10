@@ -5,7 +5,7 @@ export const trackEvent = async (
   metadata: Record<string, unknown> = {}
 ) => {
   try {
-    await supabase.from("page_analytics").insert({ event, metadata });
+    await supabase.from("page_analytics").insert([{ event, metadata }]);
   } catch (err) {
     console.error("Analytics error:", err);
   }

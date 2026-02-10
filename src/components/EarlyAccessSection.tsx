@@ -75,7 +75,7 @@ const EarlyAccessSection = () => {
     // Build hardware_type array for providers
     const hwTypes = formData.getAll("hardwareType") as string[];
 
-    const row: Record<string, unknown> = {
+    const insertData = {
       type: tab,
       full_name: fullName,
       email,
@@ -83,21 +83,17 @@ const EarlyAccessSection = () => {
       company: (formData.get("company") as string) || null,
       heard_from: (formData.get("hearAbout") as string) || null,
       message: (formData.get("message") as string) || null,
+      location_city: tab === "provider" ? ((formData.get("city") as string) || null) : null,
+      hardware_type: tab === "provider" && hwTypes.length > 0 ? hwTypes : null,
+      gpu_models: tab === "provider" ? ((formData.get("gpuModels") as string) || null) : null,
+      num_units: tab === "provider" && formData.get("units") ? Number(formData.get("units")) : null,
+      monthly_power_cost_sar: tab === "provider" && formData.get("powerCost") ? Number(formData.get("powerCost")) : null,
+      use_case: tab === "renter" ? ((formData.get("useCase") as string) || null) : null,
+      gpu_preference: tab === "renter" ? ((formData.get("gpuPreference") as string) || null) : null,
+      monthly_budget: tab === "renter" ? ((formData.get("budget") as string) || null) : null,
     };
 
-    if (tab === "provider") {
-      row.location_city = (formData.get("city") as string) || null;
-      row.hardware_type = hwTypes.length > 0 ? hwTypes : null;
-      row.gpu_models = (formData.get("gpuModels") as string) || null;
-      row.num_units = formData.get("units") ? Number(formData.get("units")) : null;
-      row.monthly_power_cost_sar = formData.get("powerCost") ? Number(formData.get("powerCost")) : null;
-    } else {
-      row.use_case = (formData.get("useCase") as string) || null;
-      row.gpu_preference = (formData.get("gpuPreference") as string) || null;
-      row.monthly_budget = (formData.get("budget") as string) || null;
-    }
-
-    const { error } = await supabase.from("waitlist").insert(row);
+    const { error } = await supabase.from("waitlist").insert([insertData]);
 
     if (error) {
       toast({
