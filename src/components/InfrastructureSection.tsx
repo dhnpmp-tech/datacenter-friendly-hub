@@ -61,9 +61,9 @@ const InfrastructureSection = () => {
             {/* Terminal-style card */}
             <div className="rounded-lg border border-border bg-card overflow-hidden">
               <div className="flex items-center gap-2 border-b border-border px-4 py-3">
-                <span className="h-3 w-3 rounded-full bg-destructive/60" />
-                <span className="h-3 w-3 rounded-full bg-yellow-500/60" />
-                <span className="h-3 w-3 rounded-full bg-green-500/60" />
+                <span className="h-3 w-3 rounded-full bg-terminal-err" />
+                <span className="h-3 w-3 rounded-full bg-terminal-warn" />
+                <span className="h-3 w-3 rounded-full bg-terminal-ok" />
                 <span className="ml-3 font-mono text-xs text-muted-foreground">system_status.sh</span>
               </div>
               <div className="p-5 font-mono text-sm leading-relaxed">

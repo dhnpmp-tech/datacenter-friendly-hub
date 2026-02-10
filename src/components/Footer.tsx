@@ -42,7 +42,7 @@ const Footer = () => {
             © 2026 NexusDC. All rights reserved.
           </p>
           <div className="flex items-center gap-2">
-            <span className="h-1.5 w-1.5 rounded-full bg-green-500 animate-pulse-glow" />
+            <span className="h-1.5 w-1.5 rounded-full bg-terminal-ok animate-pulse-glow" />
             <span className="text-xs text-muted-foreground">All systems operational</span>
           </div>
         </div>
