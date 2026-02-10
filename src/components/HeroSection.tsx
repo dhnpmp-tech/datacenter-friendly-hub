@@ -1,4 +1,6 @@
+import { useEffect } from "react";
 import { motion } from "framer-motion";
+import { trackEvent } from "@/lib/analytics";
 
 const stats = [
   { value: "12", label: "Providers" },
@@ -8,6 +10,14 @@ const stats = [
 ];
 
 const HeroSection = () => {
+  useEffect(() => {
+    trackEvent("page_view", { page: "home" });
+  }, []);
+
+  const handleCtaClick = (cta: string) => {
+    trackEvent("cta_click", { cta });
+  };
+
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
       {/* Subtle background */}
@@ -32,12 +42,14 @@ const HeroSection = () => {
           <div className="mt-10 flex flex-col gap-4 sm:flex-row">
             <a
               href="#early-access"
+              onClick={() => handleCtaClick("i_have_hardware")}
               className="rounded-lg bg-primary px-8 py-3.5 text-sm font-semibold text-primary-foreground transition-all hover:brightness-110 hover:shadow-[0_0_30px_hsl(37_91%_55%/0.3)]"
             >
               I Have Hardware
             </a>
             <a
               href="#early-access"
+              onClick={() => handleCtaClick("i_need_compute")}
               className="rounded-lg border border-primary/50 px-8 py-3.5 text-sm font-semibold text-primary transition-all hover:bg-primary hover:text-primary-foreground"
             >
               I Need Compute

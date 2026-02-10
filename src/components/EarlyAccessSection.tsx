@@ -2,6 +2,8 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { Server, Terminal } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+import { trackEvent } from "@/lib/analytics";
 
 const hearAboutOptions = [
   "Twitter/X",
@@ -41,32 +43,77 @@ const labelClass = "block text-sm font-medium text-foreground mb-1.5";
 
 const EarlyAccessSection = () => {
   const [tab, setTab] = useState<"provider" | "renter">("provider");
+  const [submitting, setSubmitting] = useState(false);
   const { toast } = useToast();
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    const data: Record<string, unknown> = { role: tab };
-    formData.forEach((value, key) => {
-      if (key === "hardwareType") {
-        const existing = data[key];
-        if (Array.isArray(existing)) {
-          existing.push(value);
-        } else if (existing) {
-          data[key] = [existing, value];
-        } else {
-          data[key] = [value];
-        }
-      } else {
-        data[key] = value;
-      }
-    });
-    console.log("Early Access Submission:", data);
+    setSubmitting(true);
+
+    const form = e.currentTarget;
+    const formData = new FormData(form);
+
+    const email = (formData.get("email") as string).trim();
+    const fullName = (formData.get("fullName") as string).trim();
+
+    // Check duplicate email
+    const { count } = await supabase
+      .from("waitlist")
+      .select("*", { count: "exact", head: true })
+      .eq("email", email);
+
+    if (count && count > 0) {
+      toast({
+        title: "Already registered",
+        description: "This email is already on our waitlist. We'll be in touch soon!",
+        variant: "destructive",
+      });
+      setSubmitting(false);
+      return;
+    }
+
+    // Build hardware_type array for providers
+    const hwTypes = formData.getAll("hardwareType") as string[];
+
+    const insertData = {
+      type: tab,
+      full_name: fullName,
+      email,
+      phone: (formData.get("phone") as string) || null,
+      company: (formData.get("company") as string) || null,
+      heard_from: (formData.get("hearAbout") as string) || null,
+      message: (formData.get("message") as string) || null,
+      location_city: tab === "provider" ? ((formData.get("city") as string) || null) : null,
+      hardware_type: tab === "provider" && hwTypes.length > 0 ? hwTypes : null,
+      gpu_models: tab === "provider" ? ((formData.get("gpuModels") as string) || null) : null,
+      num_units: tab === "provider" && formData.get("units") ? Number(formData.get("units")) : null,
+      monthly_power_cost_sar: tab === "provider" && formData.get("powerCost") ? Number(formData.get("powerCost")) : null,
+      use_case: tab === "renter" ? ((formData.get("useCase") as string) || null) : null,
+      gpu_preference: tab === "renter" ? ((formData.get("gpuPreference") as string) || null) : null,
+      monthly_budget: tab === "renter" ? ((formData.get("budget") as string) || null) : null,
+    };
+
+    const { error } = await supabase.from("waitlist").insert([insertData]);
+
+    if (error) {
+      toast({
+        title: "Something went wrong",
+        description: "Please try again later.",
+        variant: "destructive",
+      });
+      setSubmitting(false);
+      return;
+    }
+
+    await trackEvent("form_submit", { type: tab, email });
+
     toast({
       title: "You're on the list!",
       description: "We'll be in touch within 48 hours.",
     });
-    e.currentTarget.reset();
+
+    form.reset();
+    setSubmitting(false);
   };
 
   return (
@@ -140,7 +187,6 @@ const EarlyAccessSection = () => {
             </div>
 
             {tab === "provider" ? (
-              /* Provider-specific fields */
               <>
                 <div>
                   <label htmlFor="city" className={labelClass}>City *</label>
@@ -181,7 +227,6 @@ const EarlyAccessSection = () => {
                 </div>
               </>
             ) : (
-              /* Renter-specific fields */
               <>
                 <div>
                   <label htmlFor="useCase" className={labelClass}>Use Case *</label>
@@ -235,9 +280,10 @@ const EarlyAccessSection = () => {
 
             <button
               type="submit"
-              className="w-full rounded-lg bg-primary py-3 text-sm font-bold text-primary-foreground transition-all hover:brightness-110 hover:shadow-[0_0_30px_hsl(37_91%_55%/0.25)]"
+              disabled={submitting}
+              className="w-full rounded-lg bg-primary py-3 text-sm font-bold text-primary-foreground transition-all hover:brightness-110 hover:shadow-[0_0_30px_hsl(37_91%_55%/0.25)] disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Request Early Access
+              {submitting ? "Submitting..." : "Request Early Access"}
             </button>
 
             <p className="text-center text-xs text-muted-foreground">
