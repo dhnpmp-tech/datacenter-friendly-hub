@@ -50,7 +50,7 @@ const AdvantagesSection = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-60px" }}
               transition={{ duration: 0.45, delay: i * 0.08 }}
-              className="rounded-xl border border-border/40 bg-muted p-6 transition-all duration-300 hover:-translate-y-0.5 hover:border-primary/25"
+              className="rounded-xl border border-border/40 bg-card p-6 transition-all duration-300 hover:-translate-y-0.5 hover:border-primary/25"
             >
               <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
                 <card.Icon size={20} className="text-primary" />
