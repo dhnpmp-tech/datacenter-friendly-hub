@@ -62,7 +62,7 @@ const HeroSection = () => {
                   i === 2 ? "rounded-bl-xl sm:rounded-none" : ""
                 }${i === 3 ? "rounded-br-xl sm:rounded-r-xl sm:rounded-bl-none" : ""}`}
               >
-                <span className="text-2xl font-bold text-foreground">{stat.value}</span>
+                <span className="text-2xl font-bold text-primary">{stat.value}</span>
                 <span className="text-xs font-medium text-muted-foreground">{stat.label}</span>
               </div>
             ))}
