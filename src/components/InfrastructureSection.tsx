@@ -68,11 +68,11 @@ const InfrastructureSection = () => {
               </div>
               <div className="p-5 font-mono text-sm leading-relaxed">
                 <div className="text-muted-foreground">$ nexus status --verbose</div>
-                <div className="mt-3 text-green-400">✓ Power Systems: NOMINAL</div>
-                <div className="text-green-400">✓ Cooling: OPTIMAL (18.2°C)</div>
-                <div className="text-green-400">✓ Network: 99.999% UPTIME</div>
-                <div className="text-green-400">✓ Security: ALL CLEAR</div>
-                <div className="text-green-400">✓ Storage: 2.4PB AVAILABLE</div>
+                <div className="mt-3 text-terminal-ok">✓ Power Systems: NOMINAL</div>
+                <div className="text-terminal-ok">✓ Cooling: OPTIMAL (18.2°C)</div>
+                <div className="text-terminal-ok">✓ Network: 99.999% UPTIME</div>
+                <div className="text-terminal-ok">✓ Security: ALL CLEAR</div>
+                <div className="text-terminal-ok">✓ Storage: 2.4PB AVAILABLE</div>
                 <div className="mt-3 text-muted-foreground">
                   <span className="text-primary">→</span> All systems operational across 28 regions
                 </div>
