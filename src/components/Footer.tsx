@@ -1,3 +1,5 @@
+import dc1Logo from "@/assets/dc1-logo.jpg";
+
 const footerLinks = {
   Solutions: ["Colocation", "Bare Metal", "Cloud", "GPU Clusters", "CDN"],
   Company: ["About", "Careers", "Blog", "Press"],
@@ -11,11 +13,11 @@ const Footer = () => {
       <div className="container mx-auto px-6 py-16">
         <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-5">
           <div className="lg:col-span-1">
-            <a href="/" className="font-mono text-lg font-bold text-foreground">
-              <span className="text-primary">NEXUS</span>DC
+            <a href="/" className="flex items-center">
+              <img src={dc1Logo} alt="DC1" className="h-12 w-auto" />
             </a>
             <p className="mt-3 text-sm text-muted-foreground">
-              Enterprise datacenter infrastructure for the modern web.
+              Decentralized compute marketplace. Power, Digitalized.
             </p>
           </div>
 
@@ -39,7 +41,7 @@ const Footer = () => {
 
         <div className="mt-16 flex flex-col items-center justify-between gap-4 border-t border-border/50 pt-8 sm:flex-row">
           <p className="text-xs text-muted-foreground">
-            © 2026 NexusDC. All rights reserved.
+            © 2026 DC1. All rights reserved.
           </p>
           <div className="flex items-center gap-2">
             <span className="h-1.5 w-1.5 rounded-full bg-terminal-ok animate-pulse-glow" />
