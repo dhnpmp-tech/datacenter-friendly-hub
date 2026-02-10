@@ -85,4 +85,20 @@
   .bg-radial-fade {
     background: radial-gradient(ellipse at center, hsl(var(--primary) / 0.08) 0%, transparent 70%);
   }
+
+  .text-terminal-ok {
+    color: hsl(142 76% 56%);
+  }
+
+  .bg-terminal-ok {
+    background-color: hsl(142 76% 56%);
+  }
+
+  .bg-terminal-warn {
+    background-color: hsl(48 96% 53% / 0.6);
+  }
+
+  .bg-terminal-err {
+    background-color: hsl(var(--destructive) / 0.6);
+  }
 }
