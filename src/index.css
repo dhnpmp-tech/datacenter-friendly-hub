@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -6,46 +6,45 @@
 
 @layer base {
   :root {
-    --background: 230 50% 5%;
+    --background: 240 33% 4%;
     --foreground: 0 0% 94%;
 
-    --card: 222 47% 9%;
+    --card: 222 47% 7%;
     --card-foreground: 0 0% 94%;
 
-    --popover: 222 47% 9%;
+    --popover: 222 47% 7%;
     --popover-foreground: 0 0% 94%;
 
     --primary: 37 91% 55%;
-    --primary-foreground: 230 50% 5%;
+    --primary-foreground: 240 33% 4%;
 
-    --secondary: 222 40% 12%;
-    --secondary-foreground: 0 0% 85%;
+    --secondary: 217 91% 60%;
+    --secondary-foreground: 0 0% 94%;
 
     --muted: 222 30% 10%;
-    --muted-foreground: 215 15% 55%;
+    --muted-foreground: 218 11% 60%;
 
     --accent: 217 91% 60%;
-    --accent-foreground: 230 50% 5%;
+    --accent-foreground: 240 33% 4%;
 
-    --destructive: 0 84.2% 60.2%;
+    --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 222 25% 14%;
-    --input: 222 25% 14%;
+    --border: 222 20% 14%;
+    --input: 222 20% 14%;
     --ring: 37 91% 55%;
 
-    --radius: 0.75rem;
+    --radius: 0.5rem;
 
-    --glow-primary: 0 0 40px hsl(37 91% 55% / 0.15);
-    --glow-strong: 0 0 80px hsl(37 91% 55% / 0.25);
+    --success: 142 71% 45%;
 
-    --sidebar-background: 222 47% 9%;
+    --sidebar-background: 222 47% 7%;
     --sidebar-foreground: 0 0% 85%;
     --sidebar-primary: 37 91% 55%;
-    --sidebar-primary-foreground: 230 50% 5%;
-    --sidebar-accent: 222 40% 12%;
+    --sidebar-primary-foreground: 240 33% 4%;
+    --sidebar-accent: 222 30% 10%;
     --sidebar-accent-foreground: 0 0% 85%;
-    --sidebar-border: 222 25% 14%;
+    --sidebar-border: 222 20% 14%;
     --sidebar-ring: 37 91% 55%;
   }
 }
@@ -56,49 +55,24 @@
   }
 
   body {
-    @apply bg-background text-foreground font-sans antialiased;
+    @apply bg-background text-foreground antialiased;
     font-family: 'Inter', sans-serif;
   }
 
-  h1, h2, h3, h4, h5, h6 {
-    font-family: 'JetBrains Mono', monospace;
+  html {
+    scroll-behavior: smooth;
   }
 }
 
 @layer utilities {
-  .text-gradient {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary via-amber-300 to-primary;
-  }
-
-  .border-glow {
-    border-color: hsl(var(--primary) / 0.3);
-    box-shadow: var(--glow-primary);
-  }
-
   .bg-grid {
-    background-image: 
-      linear-gradient(hsl(var(--border) / 0.5) 1px, transparent 1px),
-      linear-gradient(90deg, hsl(var(--border) / 0.5) 1px, transparent 1px);
-    background-size: 60px 60px;
+    background-image:
+      linear-gradient(hsl(var(--border) / 0.3) 1px, transparent 1px),
+      linear-gradient(90deg, hsl(var(--border) / 0.3) 1px, transparent 1px);
+    background-size: 80px 80px;
   }
 
-  .bg-radial-fade {
-    background: radial-gradient(ellipse at center, hsl(var(--primary) / 0.08) 0%, transparent 70%);
-  }
-
-  .text-terminal-ok {
-    color: hsl(142 76% 56%);
-  }
-
-  .bg-terminal-ok {
-    background-color: hsl(142 76% 56%);
-  }
-
-  .bg-terminal-warn {
-    background-color: hsl(48 96% 53% / 0.6);
-  }
-
-  .bg-terminal-err {
-    background-color: hsl(var(--destructive) / 0.6);
+  .bg-radial-glow {
+    background: radial-gradient(ellipse at 50% 40%, hsl(var(--primary) / 0.06) 0%, transparent 60%);
   }
 }
