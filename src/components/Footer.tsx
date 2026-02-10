@@ -1,3 +1,5 @@
+import dc1Logo from "@/assets/dc1-logo.jpg";
+
 const footerLinks = {
   Solutions: ["Colocation", "Bare Metal", "Cloud", "GPU Clusters", "CDN"],
   Company: ["About", "Careers", "Blog", "Press"],
