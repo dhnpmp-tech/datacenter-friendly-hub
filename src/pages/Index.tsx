@@ -1,6 +1,7 @@
 import Navbar from "@/components/Navbar";
 import HeroSection from "@/components/HeroSection";
 import ProblemSolutionSection from "@/components/ProblemSolutionSection";
+import HowItWorksSection from "@/components/HowItWorksSection";
 
 const Index = () => {
   return (
@@ -8,6 +9,7 @@ const Index = () => {
       <Navbar />
       <HeroSection />
       <ProblemSolutionSection />
+      <HowItWorksSection />
     </div>
   );
 };
