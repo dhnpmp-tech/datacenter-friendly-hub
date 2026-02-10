@@ -3,6 +3,7 @@ import HeroSection from "@/components/HeroSection";
 import ProblemSolutionSection from "@/components/ProblemSolutionSection";
 import HowItWorksSection from "@/components/HowItWorksSection";
 import AdvantagesSection from "@/components/AdvantagesSection";
+import EarlyAccessSection from "@/components/EarlyAccessSection";
 
 const Index = () => {
   return (
@@ -12,6 +13,7 @@ const Index = () => {
       <ProblemSolutionSection />
       <HowItWorksSection />
       <AdvantagesSection />
+      <EarlyAccessSection />
     </div>
   );
 };
