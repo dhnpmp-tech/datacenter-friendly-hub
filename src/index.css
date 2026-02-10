@@ -67,7 +67,7 @@
 
 @layer utilities {
   .text-gradient {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary via-cyan-300 to-primary;
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary via-amber-300 to-primary;
   }
 
   .border-glow {
