@@ -4,27 +4,31 @@ import { ChevronDown } from "lucide-react";
 const disclaimers = [
   {
     title: "Earnings Estimates",
-    text: "Estimated earnings are projections based on current market rates and average utilization. Actual earnings may vary based on hardware performance, network conditions, demand fluctuations, and uptime. DC1 does not guarantee specific returns. Market rates are sourced from publicly available data and may not reflect real-time pricing.",
+    text: "Estimated earnings are projections based on current global marketplace rates and historical utilization averages. Actual earnings may vary significantly based on hardware condition, network bandwidth, geographic demand, uptime, and market fluctuations. DC1 does not guarantee specific returns or minimum utilization rates. The 15% platform fee shown reflects DC1's market maker spread and covers billing, security, compliance, and demand matching. Projections assume 24/7 availability — actual availability will reduce earnings proportionally.",
+  },
+  {
+    title: "Market Data Sources",
+    text: "GPU rental rates and utilization figures are sourced from the vast.ai global marketplace index (500.farm/vastai-exporter) and updated hourly. These rates represent median global prices and may differ from rates achievable on the DC1 platform. Past market performance does not guarantee future rates. DC1 marketplace pricing will be determined by our market maker model and may differ from third-party marketplace rates shown in estimates.",
   },
   {
     title: "Hardware Detection",
-    text: "Hardware information is detected locally in your browser using standard web APIs. No data is transmitted until you explicitly submit the form. DC1 does not install software or access your device beyond what your browser permits.",
-  },
-  {
-    title: "General",
-    text: "DC1 is a product of HAAK Energy Solutions Company (CR: 7041633988). The platform is currently in development. Features, pricing, and availability described on this page represent our planned offering and are subject to change. Early access registration does not constitute a binding agreement or guarantee of service.",
+    text: "Hardware information is detected locally in your browser using standard WebGL APIs. All detection occurs client-side — no data is transmitted to DC1 servers until you explicitly submit a form. DC1 does not install software, run benchmarks, or access your device beyond what your browser permits. Detection accuracy depends on browser settings and driver configuration; results may not reflect your actual hardware in all cases.",
   },
   {
     title: "Energy Rates",
-    text: 'Energy cost comparisons reference publicly available Saudi Electricity Company (SEC) tariff schedules and global averages. Actual rates depend on consumption tier, location, and applicable CITC licensing. The term "competitive" reflects Saudi Arabia\'s energy pricing relative to global datacenter markets.',
+    text: 'Energy cost comparisons reference publicly available Saudi Electricity Company (SEC) tariff schedules (0.18 SAR/kWh for licensed cloud operators) and International Energy Agency (IEA) country averages. Actual energy costs depend on consumption tier, location, provider contract, and applicable CITC licensing category. The term "competitive" reflects Saudi Arabia\'s energy pricing relative to global datacenter markets and does not constitute a price guarantee. Power consumption estimates use manufacturer-specified TDP ratings with a 30% system overhead factor.',
+  },
+  {
+    title: "General",
+    text: "DC1 is a product of HAAK Energy Solutions Company (CR: 7041633988), Kingdom of Saudi Arabia. The platform is currently in pre-launch development. All features, pricing models, and service availability described on this website represent planned offerings and are subject to change without notice. Early access registration does not constitute a binding agreement, guarantee of service, or reservation of capacity.",
   },
   {
     title: "Regulatory Compliance",
-    text: "DC1 is designed for alignment with SDAIA, NDMO, and PDPL requirements. Compliance status is subject to ongoing regulatory review and certification. References to regulatory frameworks do not imply formal endorsement or certification by any government body.",
+    text: "DC1 is designed for alignment with SDAIA (Saudi Data and AI Authority), NDMO (National Data Management Office), and PDPL (Personal Data Protection Law) requirements. References to regulatory frameworks describe our compliance objectives and do not imply formal endorsement, certification, or approval by any government body. Compliance status is subject to ongoing regulatory review and certification processes.",
   },
   {
     title: "Data Privacy",
-    text: "Information submitted through this website is stored securely and used solely for the purpose of processing your early access request. We do not sell or share your personal data with third parties.",
+    text: "Information submitted through this website is stored securely and processed in accordance with the Saudi Personal Data Protection Law (PDPL). We do not sell, rent, or share your personal data with third parties for marketing purposes. All data processing is limited to the purposes stated at the time of collection.",
     link: { href: "/privacy", label: "Privacy Policy" },
   },
 ];
