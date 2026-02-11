@@ -34,6 +34,8 @@ const Earn = () => {
   const [detectionMsg, setDetectionMsg] = useState<string | null>(null);
   const [isNonDiscrete, setIsNonDiscrete] = useState(false);
   const [selectedDropdown, setSelectedDropdown] = useState("");
+  const [manualSelectorFocus, setManualSelectorFocus] = useState(false);
+  const manualRef = useRef<HTMLDivElement>(null);
 
   // Form
   const [formName, setFormName] = useState("");
