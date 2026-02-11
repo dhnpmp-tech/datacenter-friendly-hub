@@ -125,6 +125,9 @@ const EarlyAccessSection = () => {
       return;
     }
 
+    // Notify via edge function (fire-and-forget)
+    supabase.functions.invoke("notify-signup", { body: { record: insertData } }).catch(console.error);
+
     await trackEvent("form_submit", { type: tab, email });
 
     toast({

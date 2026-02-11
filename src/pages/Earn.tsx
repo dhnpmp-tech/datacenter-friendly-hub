@@ -128,21 +128,26 @@ const Earn = () => {
       return;
     }
 
-    const { error } = await supabase.from("waitlist").insert([{
-      type: "provider",
+    const insertData = {
+      type: "provider" as const,
       full_name: formName,
       email: formEmail,
       location_city: formLocation,
       gpu_models: gpu,
       num_units: parseInt(formGpuCount) || 1,
       message: gpuInfo ? `GPU: ${detectedGPU}, Rate: $${gpuInfo.rate}/hr` : null,
-    }]);
+    };
+
+    const { error } = await supabase.from("waitlist").insert([insertData]);
 
     if (error) {
       toast({ title: "Something went wrong", description: "Please try again.", variant: "destructive" });
       setSubmitting(false);
       return;
     }
+
+    // Notify via edge function (fire-and-forget)
+    supabase.functions.invoke("notify-signup", { body: { record: insertData } }).catch(console.error);
 
     await trackEvent("form_submit", { type: "provider", email: formEmail, source: "earn_page" });
     setSubmitted(true);
