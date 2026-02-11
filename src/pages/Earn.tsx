@@ -1,17 +1,17 @@
 import { useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
 import { Loader2, CheckCircle2, AlertTriangle } from "lucide-react";
-import { Slider } from "@/components/ui/slider";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { trackEvent } from "@/lib/analytics";
+import EarningsReport from "@/components/EarningsReport";
 import {
   GPU_DB, GPU_SELECT_OPTIONS, LOCATION_OPTIONS,
-  detectGPU, matchGPU, getMarketPrice, calcEarnings, calcComparison,
+  detectGPU, matchGPU,
   parseGPUName, getNonDiscreteMessage, autoMatchDropdown,
-  type GPUInfo, type LiveGPUData,
+  type GPUInfo,
 } from "@/lib/gpu-data";
 
 const tierBadge: Record<string, { label: string; className: string }> = {
@@ -33,11 +33,6 @@ const Earn = () => {
   const [isNonDiscrete, setIsNonDiscrete] = useState(false);
   const [selectedDropdown, setSelectedDropdown] = useState("");
 
-  // Data
-  const [liveData, setLiveData] = useState<LiveGPUData | null>(null);
-  const [marketPrice, setMarketPrice] = useState(0);
-  const [utilization, setUtilization] = useState(60);
-
   // Form
   const [formName, setFormName] = useState("");
   const [formEmail, setFormEmail] = useState("");
@@ -49,21 +44,9 @@ const Earn = () => {
   const gpuInfo: GPUInfo | undefined = detectedGPU ? GPU_DB[detectedGPU] : undefined;
   const isKnown = !!gpuInfo;
 
-  const earnings = isKnown ? calcEarnings(detectedGPU!, marketPrice, utilization / 100) : null;
-  const comparison = isKnown ? calcComparison(detectedGPU!, marketPrice, utilization / 100) : null;
-
-  // Fetch live market data + detect GPU on mount
+  // Detect GPU on mount
   useEffect(() => {
     (async () => {
-      let live: LiveGPUData | null = null;
-      try {
-        const resp = await fetch("https://500.farm/vastai-exporter/gpu-stats");
-        live = await resp.json();
-        setLiveData(live);
-      } catch {
-        console.log("Using fallback prices");
-      }
-
       const detection = detectGPU();
       if (detection) {
         setRawRenderer(detection.renderer);
@@ -90,7 +73,6 @@ const Earn = () => {
           if (autoMatch && GPU_DB[autoMatch]) {
             setDetectedGPU(autoMatch);
             setSelectedDropdown(autoMatch);
-            setMarketPrice(getMarketPrice(autoMatch, live));
             setDetecting(false);
             return;
           }
@@ -101,7 +83,6 @@ const Earn = () => {
         if (matched && GPU_DB[matched]) {
           setDetectedGPU(matched);
           setSelectedDropdown(matched);
-          setMarketPrice(getMarketPrice(matched, live));
         } else {
           // Discrete but not in our list
           setDetectionMsg(parsed?.clean || detection.renderer);
@@ -126,10 +107,8 @@ const Earn = () => {
     setSelectedDropdown(name);
     setRawRenderer(null);
     setShowManual(false);
-    setIsNonDiscrete(false);
     setDetectionMsg(null);
-    setMarketPrice(getMarketPrice(name, liveData));
-  }, [liveData]);
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -156,7 +135,7 @@ const Earn = () => {
       location_city: formLocation,
       gpu_models: gpu,
       num_units: parseInt(formGpuCount) || 1,
-      message: earnings ? `Est. monthly: $${Math.round(earnings.monthlyEarning)}` : null,
+      message: gpuInfo ? `GPU: ${detectedGPU}, Rate: $${gpuInfo.rate}/hr` : null,
     }]);
 
     if (error) {
@@ -251,62 +230,12 @@ const Earn = () => {
           )}
         </Card>
 
-        {/* Earnings Calculator */}
-        {isKnown && earnings && (
-          <Card title="Your Estimated Earnings" icon="💰">
-            <div className="my-5">
-              <div className="flex justify-between mb-2">
-                <span className="text-xs text-muted-foreground">Utilization</span>
-                <span className="text-xs font-semibold text-primary">{utilization}%</span>
-              </div>
-              <Slider
-                value={[utilization]}
-                onValueChange={(v) => setUtilization(v[0])}
-                min={20}
-                max={100}
-                step={1}
-              />
-            </div>
-
-            <div className="text-center py-5">
-              <p className="text-5xl font-extrabold bg-gradient-to-br from-green-400 to-green-500 bg-clip-text text-transparent leading-tight">
-                ${Math.round(earnings.monthlyEarning)}
-              </p>
-              <p className="text-sm text-muted-foreground mt-1">estimated monthly earnings</p>
-            </div>
-
-            <div className="grid grid-cols-3 gap-3 mt-5">
-              <StatBox label="Market Rate/hr" value={`$${earnings.marketPrice.toFixed(2)}`} />
-              <StatBox label="Your Cut (85%)" value={`$${earnings.yourCut.toFixed(3)}`} />
-              <StatBox label="Power Cost/hr" value={`-$${earnings.hourlyPowerCost.toFixed(3)}`} />
-            </div>
-          </Card>
-        )}
-
-        {/* DC1 vs Others */}
-        {isKnown && comparison && (
-          <Card title="DC1 vs Hosting Elsewhere" icon="⚡">
-            {/* Energy bar */}
-            <div className="flex h-9 rounded-lg overflow-hidden my-3">
-              <div className="bg-green-500 flex items-center justify-center text-xs font-bold text-black" style={{ width: `${comparison.energyBarPct}%` }}>
-                DC1: $0.048/kWh
-              </div>
-              <div className="bg-red-500/70 flex items-center justify-center text-xs font-bold text-white" style={{ width: `${100 - comparison.energyBarPct}%` }}>
-                Global avg: $0.12/kWh
-              </div>
-            </div>
-
-            <CompRow platform="DC1 (Saudi Energy)" tag="BEST" net={comparison.dc1.net} power={comparison.dc1.power} highlight />
-            <CompRow platform="vast.ai (US energy)" net={comparison.us.net} power={comparison.us.power} />
-            <CompRow platform="Self-host (Dubai energy)" net={comparison.dubai.net} power={comparison.dubai.power} />
-            <CompRow platform="Self-host (EU energy)" net={comparison.eu.net} power={comparison.eu.power} noBorder />
-
-            <div className="mt-4 text-center rounded-lg bg-green-500/10 p-3">
-              <span className="text-sm font-semibold text-green-400">
-                DC1 earns you ${Math.round(comparison.dc1.net - comparison.us.net)}/mo more than US-based hosting
-              </span>
-            </div>
-          </Card>
+        {/* Earnings Report */}
+        {isKnown && detectedGPU && (
+          <EarningsReport
+            gpuName={detectedGPU}
+            gpuCount={parseInt(formGpuCount) || 1}
+          />
         )}
 
         {/* Signup Form */}
@@ -414,32 +343,6 @@ function SpecItem({ label, value }: { label: string; value: string }) {
     <div className="rounded-lg bg-muted p-3.5">
       <p className="text-[11px] uppercase tracking-wider text-muted-foreground">{label}</p>
       <p className="text-lg font-semibold mt-1">{value}</p>
-    </div>
-  );
-}
-
-function StatBox({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="rounded-lg bg-muted p-3.5 text-center">
-      <p className="text-lg font-bold text-white">{value}</p>
-      <p className="text-[11px] text-muted-foreground mt-1">{label}</p>
-    </div>
-  );
-}
-
-function CompRow({ platform, tag, net, power, highlight, noBorder }: {
-  platform: string; tag?: string; net: number; power: number; highlight?: boolean; noBorder?: boolean;
-}) {
-  return (
-    <div className={`flex justify-between items-center py-3.5 ${noBorder ? "" : "border-b border-border"}`}>
-      <div className="font-medium text-sm">
-        {highlight ? "🟢" : "⚪"} {platform}
-        {tag && <span className="ml-2 inline-block bg-green-500/20 text-green-400 px-2 py-0.5 rounded-full text-[11px] font-semibold">{tag}</span>}
-      </div>
-      <div className="text-right">
-        <p className={`font-semibold ${highlight ? "text-green-400" : ""}`}>${Math.round(net)}/mo</p>
-        <p className="text-xs text-muted-foreground">Power: ${Math.round(power)}/mo</p>
-      </div>
     </div>
   );
 }

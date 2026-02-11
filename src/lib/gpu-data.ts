@@ -1,29 +1,37 @@
-// GPU database with power consumption and matching patterns
+// GPU database with power consumption, market rates, and matching patterns
 export interface GPUInfo {
   vram: number;
   tdp: number;
   tier: 'high' | 'mid' | 'low';
   cores: string;
+  rate: number; // $/hr market rate
+  utilization: number; // 0-1 global market avg
 }
 
 export const GPU_DB: Record<string, GPUInfo> = {
-  'RTX 5090': { vram: 32, tdp: 575, tier: 'high', cores: '~21,760' },
-  'RTX 4090': { vram: 24, tdp: 450, tier: 'high', cores: '16,384' },
-  'RTX 4080': { vram: 16, tdp: 320, tier: 'mid', cores: '9,728' },
-  'RTX 4070 Ti': { vram: 12, tdp: 285, tier: 'mid', cores: '7,680' },
-  'RTX 3090': { vram: 24, tdp: 350, tier: 'mid', cores: '10,496' },
-  'RTX 3080': { vram: 10, tdp: 320, tier: 'mid', cores: '8,704' },
-  'RTX 3070': { vram: 8, tdp: 220, tier: 'mid', cores: '5,888' },
-  'RTX 3060': { vram: 12, tdp: 170, tier: 'low', cores: '3,584' },
-  'A100': { vram: 80, tdp: 400, tier: 'high', cores: '6,912' },
-  'H100': { vram: 80, tdp: 700, tier: 'high', cores: '14,592' },
+  'RTX 5090': { vram: 32, tdp: 450, tier: 'high', cores: '~21,760', rate: 0.55, utilization: 0.73 },
+  'RTX 5080': { vram: 16, tdp: 360, tier: 'mid', cores: '~10,752', rate: 0.35, utilization: 0.65 },
+  'RTX 4090': { vram: 24, tdp: 450, tier: 'high', cores: '16,384', rate: 0.42, utilization: 0.73 },
+  'RTX 4080': { vram: 16, tdp: 320, tier: 'mid', cores: '9,728', rate: 0.28, utilization: 0.60 },
+  'RTX 4070 Ti': { vram: 12, tdp: 285, tier: 'mid', cores: '7,680', rate: 0.22, utilization: 0.58 },
+  'RTX 4070': { vram: 12, tdp: 200, tier: 'mid', cores: '5,888', rate: 0.19, utilization: 0.55 },
+  'RTX 4060 Ti': { vram: 8, tdp: 160, tier: 'low', cores: '4,352', rate: 0.17, utilization: 0.52 },
+  'RTX 4060': { vram: 8, tdp: 115, tier: 'low', cores: '3,072', rate: 0.15, utilization: 0.50 },
+  'RTX 3090': { vram: 24, tdp: 350, tier: 'mid', cores: '10,496', rate: 0.18, utilization: 0.50 },
+  'RTX 3080': { vram: 10, tdp: 320, tier: 'mid', cores: '8,704', rate: 0.14, utilization: 0.45 },
+  'RTX 3070': { vram: 8, tdp: 220, tier: 'mid', cores: '5,888', rate: 0.11, utilization: 0.42 },
+  'RTX 3060': { vram: 12, tdp: 170, tier: 'low', cores: '3,584', rate: 0.08, utilization: 0.38 },
+  'A100 80GB': { vram: 80, tdp: 300, tier: 'high', cores: '6,912', rate: 1.80, utilization: 0.85 },
+  'A100 40GB': { vram: 40, tdp: 300, tier: 'high', cores: '6,912', rate: 1.40, utilization: 0.82 },
+  'H100': { vram: 80, tdp: 700, tier: 'high', cores: '14,592', rate: 3.50, utilization: 0.90 },
+  'L40S': { vram: 48, tdp: 350, tier: 'high', cores: '18,176', rate: 1.20, utilization: 0.75 },
+  'A6000': { vram: 48, tdp: 300, tier: 'mid', cores: '10,752', rate: 0.70, utilization: 0.65 },
+  'RTX A5000': { vram: 24, tdp: 230, tier: 'mid', cores: '8,192', rate: 0.50, utilization: 0.60 },
 };
 
-export const FALLBACK_PRICES: Record<string, number> = {
-  'RTX 5090': 0.41, 'RTX 4090': 0.33, 'RTX 4080': 0.22,
-  'RTX 4070 Ti': 0.15, 'RTX 3090': 0.14, 'RTX 3080': 0.10,
-  'RTX 3070': 0.08, 'RTX 3060': 0.05, 'A100': 0.80, 'H100': 2.25,
-};
+export const FALLBACK_PRICES: Record<string, number> = Object.fromEntries(
+  Object.entries(GPU_DB).map(([k, v]) => [k, v.rate])
+);
 
 export const ENERGY = {
   dc1: 0.048,
@@ -32,10 +40,34 @@ export const ENERGY = {
   eu: 0.22,
 };
 
+export const ENERGY_BY_COUNTRY: Record<string, { rate: number; label: string }> = {
+  SA: { rate: 0.048, label: 'Saudi Arabia' },
+  AE: { rate: 0.080, label: 'UAE' },
+  US: { rate: 0.120, label: 'United States' },
+  GB: { rate: 0.180, label: 'United Kingdom' },
+  DE: { rate: 0.220, label: 'Germany' },
+  FR: { rate: 0.150, label: 'France' },
+  NL: { rate: 0.160, label: 'Netherlands' },
+  CA: { rate: 0.100, label: 'Canada' },
+  AU: { rate: 0.180, label: 'Australia' },
+  JP: { rate: 0.200, label: 'Japan' },
+  KR: { rate: 0.110, label: 'South Korea' },
+  IN: { rate: 0.080, label: 'India' },
+  BR: { rate: 0.140, label: 'Brazil' },
+  TR: { rate: 0.090, label: 'Turkey' },
+  EG: { rate: 0.050, label: 'Egypt' },
+  BH: { rate: 0.030, label: 'Bahrain' },
+  QA: { rate: 0.040, label: 'Qatar' },
+  KW: { rate: 0.030, label: 'Kuwait' },
+  OM: { rate: 0.060, label: 'Oman' },
+};
+
+export const DEFAULT_ENERGY_RATE = 0.12;
+
 export const GPU_SELECT_OPTIONS = [
-  'RTX 5090', 'RTX 4090', 'RTX 4080', 'RTX 4070 Ti',
-  'RTX 3090', 'RTX 3080', 'RTX 3070', 'RTX 3060',
-  'A100', 'H100',
+  'RTX 5090', 'RTX 5080', 'RTX 4090', 'RTX 4080', 'RTX 4070 Ti', 'RTX 4070',
+  'RTX 4060 Ti', 'RTX 4060', 'RTX 3090', 'RTX 3080', 'RTX 3070', 'RTX 3060',
+  'A100 80GB', 'A100 40GB', 'H100', 'L40S', 'A6000', 'RTX A5000',
 ];
 
 export const LOCATION_OPTIONS = [
@@ -147,15 +179,24 @@ export function matchGPU(renderer: string): string | null {
 
   const patterns: [RegExp, string][] = [
     [/RTX\s*5090/i, 'RTX 5090'],
+    [/RTX\s*5080/i, 'RTX 5080'],
     [/RTX\s*4090/i, 'RTX 4090'],
     [/RTX\s*4080/i, 'RTX 4080'],
     [/RTX\s*4070\s*TI/i, 'RTX 4070 Ti'],
+    [/RTX\s*4070(?!\s*Ti)/i, 'RTX 4070'],
+    [/RTX\s*4060\s*TI/i, 'RTX 4060 Ti'],
+    [/RTX\s*4060(?!\s*Ti)/i, 'RTX 4060'],
     [/RTX\s*3090/i, 'RTX 3090'],
     [/RTX\s*3080/i, 'RTX 3080'],
     [/RTX\s*3070/i, 'RTX 3070'],
     [/RTX\s*3060/i, 'RTX 3060'],
-    [/A100/i, 'A100'],
+    [/A100\s*80/i, 'A100 80GB'],
+    [/A100\s*40/i, 'A100 40GB'],
+    [/A100/i, 'A100 80GB'],
     [/H100/i, 'H100'],
+    [/L40S/i, 'L40S'],
+    [/A6000/i, 'A6000'],
+    [/RTX\s*A5000/i, 'RTX A5000'],
   ];
 
   for (const [pattern, name] of patterns) {
