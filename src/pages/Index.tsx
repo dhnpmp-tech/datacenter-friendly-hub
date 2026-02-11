@@ -6,6 +6,7 @@ import AdvantagesSection from "@/components/AdvantagesSection";
 import EarningsCalculatorSection from "@/components/EarningsCalculatorSection";
 import EarlyAccessSection from "@/components/EarlyAccessSection";
 import TrustBar from "@/components/TrustBar";
+import LegalSection from "@/components/LegalSection";
 import Footer from "@/components/Footer";
 import { GPUProvider } from "@/contexts/GPUContext";
 
@@ -21,6 +22,7 @@ const Index = () => {
         <EarningsCalculatorSection />
         <EarlyAccessSection />
         <TrustBar />
+        <LegalSection />
         <Footer />
       </div>
     </GPUProvider>
