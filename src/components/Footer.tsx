@@ -62,10 +62,19 @@ const Footer = () => {
           </div>
         </div>
 
-        <div className="mt-10 border-t border-border pt-6 text-center">
+        <div className="mt-10 border-t border-border pt-6 text-center space-y-2">
           <p className="text-sm text-muted-foreground">
             &copy; 2026 HAAK Energy Solutions Company. All rights reserved.
           </p>
+          <button
+            onClick={() => {
+              localStorage.removeItem("dc1-cookie-consent");
+              window.location.reload();
+            }}
+            className="text-xs text-muted-foreground underline-offset-4 hover:underline hover:text-foreground transition-colors"
+          >
+            Cookie Settings
+          </button>
         </div>
       </div>
     </footer>
