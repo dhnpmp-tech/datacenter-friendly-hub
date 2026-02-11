@@ -12,6 +12,7 @@ import {
 interface EarningsReportProps {
   gpuName: string;
   gpuCount?: number;
+  onCountryDetected?: (countryCode: string) => void;
 }
 
 const MONTHLY_HOURS = 730;
@@ -28,7 +29,7 @@ const COUNTRY_FLAGS: Record<string, string> = {
   OM: '\u{1F1F4}\u{1F1F2}',
 };
 
-const EarningsReport = ({ gpuName, gpuCount = 1 }: EarningsReportProps) => {
+const EarningsReport = ({ gpuName, gpuCount = 1, onCountryDetected }: EarningsReportProps) => {
   const [countryCode, setCountryCode] = useState<string | null>(null);
   const [countryLabel, setCountryLabel] = useState("Detecting...");
   const [userEnergyRate, setUserEnergyRate] = useState<number>(DEFAULT_ENERGY_RATE);
@@ -46,6 +47,7 @@ const EarningsReport = ({ gpuName, gpuCount = 1 }: EarningsReportProps) => {
         const data = await resp.json();
         const code = data.countryCode as string;
         setCountryCode(code);
+        onCountryDetected?.(code);
         const entry = ENERGY_BY_COUNTRY[code];
         if (entry) {
           setUserEnergyRate(entry.rate);

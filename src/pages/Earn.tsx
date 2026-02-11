@@ -149,7 +149,7 @@ const Earn = () => {
     setSubmitting(false);
   };
 
-  const gpuDisplayName = isKnown ? `NVIDIA ${detectedGPU}` : (rawRenderer || detectedGPU || "");
+  const gpuDisplayName = isKnown ? detectedGPU! : (rawRenderer || detectedGPU || "");
 
   return (
     <div className="min-h-screen bg-[#0a0a0f] text-foreground">
@@ -235,7 +235,20 @@ const Earn = () => {
           <EarningsReport
             gpuName={detectedGPU}
             gpuCount={parseInt(formGpuCount) || 1}
+            onCountryDetected={(code) => {
+              const match = LOCATION_OPTIONS.find(l => l.value === code);
+              if (match) setFormLocation(match.value);
+            }}
           />
+        )}
+
+        {/* Connector */}
+        {isKnown && (
+          <div className="flex items-center gap-4 my-2 px-2">
+            <div className="flex-1 h-px bg-border" />
+            <span className="text-xs text-muted-foreground whitespace-nowrap">Like what you see?</span>
+            <div className="flex-1 h-px bg-border" />
+          </div>
         )}
 
         {/* Signup Form */}
