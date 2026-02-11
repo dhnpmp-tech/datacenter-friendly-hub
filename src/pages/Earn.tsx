@@ -1,12 +1,14 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { motion } from "framer-motion";
-import { Loader2, CheckCircle2, AlertTriangle } from "lucide-react";
+import { Loader2, CheckCircle2, AlertTriangle, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { trackEvent } from "@/lib/analytics";
 import EarningsReport from "@/components/EarningsReport";
+import GPUDetectionBanner from "@/components/earn/GPUDetectionBanner";
+import GPUManualSelector, { getPersistedGPU, persistGPU } from "@/components/earn/GPUManualSelector";
 import {
   GPU_DB, GPU_SELECT_OPTIONS, LOCATION_OPTIONS,
   detectGPU, matchGPU,
