@@ -4,6 +4,12 @@ import { GPU_SELECT_OPTIONS, GPU_DB } from "@/lib/gpu-data";
 import { persistGPU } from "@/lib/gpu-persist";
 export { getPersistedGPU, persistGPU } from "@/lib/gpu-persist";
 
+interface GPUManualSelectorProps {
+  currentGPU: string;
+  onSelect: (name: string) => void;
+  autoFocus?: boolean;
+}
+
 export default function GPUManualSelector({ currentGPU, onSelect, autoFocus }: GPUManualSelectorProps) {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
