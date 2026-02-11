@@ -1,16 +1,19 @@
 import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from "react";
 import {
   GPU_DB, detectGPU, matchGPU, getMarketPrice,
-  calcEarnings, calcComparison,
+  calcEarnings, calcComparison, parseGPUName, getNonDiscreteMessage, autoMatchDropdown,
   type GPUInfo, type LiveGPUData,
 } from "@/lib/gpu-data";
+import { getPersistedGPU, persistGPU } from "@/components/earn/GPUManualSelector";
 
 interface GPUContextValue {
   detecting: boolean;
   detectedGPU: string | null;
   rawRenderer: string | null;
+  cleanGPUName: string | null;
   gpuInfo: GPUInfo | undefined;
   isKnown: boolean;
+  isNonDiscrete: boolean;
   marketPrice: number;
   utilization: number;
   setUtilization: (v: number) => void;
@@ -32,11 +35,21 @@ export function GPUProvider({ children }: { children: ReactNode }) {
   const [detecting, setDetecting] = useState(true);
   const [detectedGPU, setDetectedGPU] = useState<string | null>(null);
   const [rawRenderer, setRawRenderer] = useState<string | null>(null);
+  const [cleanGPUName, setCleanGPUName] = useState<string | null>(null);
+  const [isNonDiscrete, setIsNonDiscrete] = useState(false);
   const [liveData, setLiveData] = useState<LiveGPUData | null>(null);
   const [marketPrice, setMarketPrice] = useState(0);
   const [utilization, setUtilization] = useState(60);
 
   useEffect(() => {
+    const persisted = getPersistedGPU();
+    if (persisted) {
+      setDetectedGPU(persisted);
+      if (GPU_DB[persisted]) {
+        setMarketPrice(GPU_DB[persisted].rate);
+      }
+    }
+
     (async () => {
       let live: LiveGPUData | null = null;
       try {
@@ -49,15 +62,40 @@ export function GPUProvider({ children }: { children: ReactNode }) {
 
       const detection = detectGPU();
       if (detection) {
+        setRawRenderer(detection.renderer);
+
+        // Check for non-discrete GPU
+        const nonDiscreteMsg = getNonDiscreteMessage(detection.renderer);
+        if (nonDiscreteMsg) {
+          setIsNonDiscrete(true);
+          const parsed = parseGPUName(detection.renderer);
+          if (parsed) setCleanGPUName(parsed.clean);
+          // If persisted, use that; otherwise leave unmatched
+          if (persisted && GPU_DB[persisted]) {
+            setMarketPrice(getMarketPrice(persisted, live));
+          }
+          setDetecting(false);
+          return;
+        }
+
+        const parsed = parseGPUName(detection.renderer);
+        if (parsed) {
+          setCleanGPUName(parsed.clean);
+          const autoMatch = autoMatchDropdown(parsed.clean);
+          if (autoMatch && GPU_DB[autoMatch] && !persisted) {
+            setDetectedGPU(autoMatch);
+            setMarketPrice(getMarketPrice(autoMatch, live));
+            setDetecting(false);
+            return;
+          }
+        }
+
         const matched = matchGPU(detection.renderer);
-        if (matched) {
+        if (matched && !persisted) {
           setDetectedGPU(matched);
-          setRawRenderer(detection.renderer);
           if (GPU_DB[matched]) {
             setMarketPrice(getMarketPrice(matched, live));
           }
-        } else {
-          setRawRenderer(detection.renderer || null);
         }
       }
       setDetecting(false);
@@ -67,6 +105,8 @@ export function GPUProvider({ children }: { children: ReactNode }) {
   const selectGPU = useCallback((name: string) => {
     setDetectedGPU(name);
     setRawRenderer(null);
+    setIsNonDiscrete(false);
+    persistGPU(name);
     if (GPU_DB[name]) {
       setMarketPrice(getMarketPrice(name, liveData));
     }
@@ -80,7 +120,7 @@ export function GPUProvider({ children }: { children: ReactNode }) {
 
   return (
     <GPUContext.Provider value={{
-      detecting, detectedGPU, rawRenderer, gpuInfo, isKnown,
+      detecting, detectedGPU, rawRenderer, cleanGPUName, gpuInfo, isKnown, isNonDiscrete,
       marketPrice, utilization, setUtilization, selectGPU,
       earnings, comparison, gpuDisplayName,
     }}>
