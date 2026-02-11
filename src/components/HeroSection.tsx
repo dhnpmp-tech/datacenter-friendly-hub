@@ -4,6 +4,7 @@ import { trackEvent } from "@/lib/analytics";
 import { useGPUDetection } from "@/contexts/GPUContext";
 import { GPU_SELECT_OPTIONS } from "@/lib/gpu-data";
 
+
 const stats = [
   { value: "12", label: "Providers" },
   { value: "48", label: "GPUs" },
