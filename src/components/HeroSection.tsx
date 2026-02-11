@@ -1,9 +1,11 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
+import { Info } from "lucide-react";
 import { trackEvent } from "@/lib/analytics";
 import { useGPUDetection } from "@/contexts/GPUContext";
-import { GPU_SELECT_OPTIONS } from "@/lib/gpu-data";
-
+import GPUDetectionBanner from "@/components/earn/GPUDetectionBanner";
+import GPUManualSelector from "@/components/earn/GPUManualSelector";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const stats = [
   { value: "12", label: "Providers" },
@@ -13,7 +15,10 @@ const stats = [
 ];
 
 const HeroSection = () => {
-  const { detecting, detectedGPU, isKnown, earnings, gpuDisplayName, selectGPU } = useGPUDetection();
+  const { detecting, detectedGPU, isKnown, isNonDiscrete, earnings, gpuDisplayName, selectGPU, rawRenderer, cleanGPUName } = useGPUDetection();
+  const [showManualSelector, setShowManualSelector] = useState(false);
+  const [manualFocus, setManualFocus] = useState(false);
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     trackEvent("page_view", { page: "home" });
@@ -21,6 +26,11 @@ const HeroSection = () => {
 
   const handleCtaClick = (cta: string) => {
     trackEvent("cta_click", { cta });
+  };
+
+  const handleSelectManually = () => {
+    setShowManualSelector(true);
+    setManualFocus(true);
   };
 
   return (
@@ -52,35 +62,64 @@ const HeroSection = () => {
               transition={{ duration: 0.5, delay: 0.3 }}
               className="mt-8 w-full max-w-lg"
             >
+              {/* Non-discrete GPU banner */}
+              {isNonDiscrete && rawRenderer && !isKnown && (
+                <GPUDetectionBanner
+                  rawRenderer={cleanGPUName || rawRenderer}
+                  onSelectManually={handleSelectManually}
+                />
+              )}
+
               {isKnown && earnings ? (
                 <div className="rounded-xl border border-green-500/30 bg-green-500/10 px-6 py-4">
                   <p className="text-sm text-green-400">
                     We detected your <span className="font-bold text-white">{gpuDisplayName}</span> — you could earn{" "}
                     <span className="font-bold text-green-300">${Math.round(earnings.monthlyEarning)}/mo</span>
                   </p>
-                  <a
-                    href="#earnings-calculator"
-                    onClick={() => handleCtaClick("see_your_earnings")}
-                    className="mt-3 inline-block rounded-lg bg-green-500 px-6 py-2 text-sm font-bold text-black transition-all hover:brightness-110"
-                  >
-                    See Your Earnings
-                  </a>
+                  <div className="flex flex-wrap items-center gap-3 mt-3">
+                    <a
+                      href="#earnings-calculator"
+                      onClick={() => handleCtaClick("see_your_earnings")}
+                      className="inline-block rounded-lg bg-green-500 px-6 py-2 text-sm font-bold text-black transition-all hover:brightness-110"
+                    >
+                      See Your Earnings
+                    </a>
+                    <button
+                      onClick={handleSelectManually}
+                      className="text-xs text-secondary hover:underline"
+                    >
+                      Not your GPU? Select manually →
+                    </button>
+                  </div>
                 </div>
               ) : (
                 <div className="rounded-xl border border-border bg-card px-6 py-4">
                   <p className="text-sm text-muted-foreground mb-3">Select your GPU to see earnings</p>
-                  <select
-                    className="w-full rounded-lg border border-border bg-muted px-4 py-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/60"
-                    onChange={(e) => { selectGPU(e.target.value); handleCtaClick("manual_gpu_select"); }}
-                    defaultValue=""
-                  >
-                    <option value="" disabled>Choose your GPU...</option>
-                    {GPU_SELECT_OPTIONS.map(g => (
-                      <option key={g} value={g}>NVIDIA {g}</option>
-                    ))}
-                  </select>
+                  <GPUManualSelector
+                    currentGPU={detectedGPU || ""}
+                    onSelect={(name) => { selectGPU(name); handleCtaClick("manual_gpu_select"); }}
+                    autoFocus={manualFocus}
+                  />
                 </div>
               )}
+
+              {/* Show manual selector below when user clicks "Not your GPU?" */}
+              {isKnown && showManualSelector && (
+                <div className="mt-3 rounded-xl border border-border bg-card px-6 py-4">
+                  <p className="text-sm text-muted-foreground mb-3">Select your actual GPU</p>
+                  <GPUManualSelector
+                    currentGPU={detectedGPU || ""}
+                    onSelect={(name) => { selectGPU(name); handleCtaClick("manual_gpu_select"); setShowManualSelector(false); }}
+                    autoFocus={manualFocus}
+                  />
+                </div>
+              )}
+
+              {/* Detection tip */}
+              <p className="mt-3 text-xs text-muted-foreground flex items-center justify-center gap-1.5">
+                <Info className="h-3 w-3 text-primary shrink-0" />
+                For accurate detection, use Chrome or Edge with hardware acceleration enabled
+              </p>
             </motion.div>
           )}
 
