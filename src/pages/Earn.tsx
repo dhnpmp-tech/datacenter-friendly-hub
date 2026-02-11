@@ -1,12 +1,14 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { motion } from "framer-motion";
-import { Loader2, CheckCircle2, AlertTriangle } from "lucide-react";
+import { Loader2, CheckCircle2, AlertTriangle, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { trackEvent } from "@/lib/analytics";
 import EarningsReport from "@/components/EarningsReport";
+import GPUDetectionBanner from "@/components/earn/GPUDetectionBanner";
+import GPUManualSelector, { getPersistedGPU, persistGPU } from "@/components/earn/GPUManualSelector";
 import {
   GPU_DB, GPU_SELECT_OPTIONS, LOCATION_OPTIONS,
   detectGPU, matchGPU,
@@ -32,6 +34,8 @@ const Earn = () => {
   const [detectionMsg, setDetectionMsg] = useState<string | null>(null);
   const [isNonDiscrete, setIsNonDiscrete] = useState(false);
   const [selectedDropdown, setSelectedDropdown] = useState("");
+  const [manualSelectorFocus, setManualSelectorFocus] = useState(false);
+  const manualRef = useRef<HTMLDivElement>(null);
 
   // Form
   const [formName, setFormName] = useState("");
@@ -44,8 +48,14 @@ const Earn = () => {
   const gpuInfo: GPUInfo | undefined = detectedGPU ? GPU_DB[detectedGPU] : undefined;
   const isKnown = !!gpuInfo;
 
-  // Detect GPU on mount
+  // Detect GPU on mount (check localStorage first)
   useEffect(() => {
+    const persisted = getPersistedGPU();
+    if (persisted) {
+      setDetectedGPU(persisted);
+      setSelectedDropdown(persisted);
+    }
+
     (async () => {
       const detection = detectGPU();
       if (detection) {
@@ -58,7 +68,8 @@ const Earn = () => {
           setIsNonDiscrete(true);
           const parsed = parseGPUName(detection.renderer);
           if (parsed) setCleanGPUName(parsed.clean);
-          setShowManual(true);
+          // If we have a persisted selection, don't force manual
+          if (!persisted) setShowManual(true);
           setDetecting(false);
           return;
         }
@@ -71,8 +82,10 @@ const Earn = () => {
           // Try to auto-match to dropdown
           const autoMatch = autoMatchDropdown(parsed.clean);
           if (autoMatch && GPU_DB[autoMatch]) {
-            setDetectedGPU(autoMatch);
-            setSelectedDropdown(autoMatch);
+            if (!persisted) {
+              setDetectedGPU(autoMatch);
+              setSelectedDropdown(autoMatch);
+            }
             setDetecting(false);
             return;
           }
@@ -81,17 +94,19 @@ const Earn = () => {
         // Fallback to old matchGPU logic
         const matched = matchGPU(detection.renderer);
         if (matched && GPU_DB[matched]) {
-          setDetectedGPU(matched);
-          setSelectedDropdown(matched);
+          if (!persisted) {
+            setDetectedGPU(matched);
+            setSelectedDropdown(matched);
+          }
         } else {
           // Discrete but not in our list
           setDetectionMsg(parsed?.clean || detection.renderer);
-          setShowManual(true);
+          if (!persisted) setShowManual(true);
         }
       } else {
         setDetectionMsg("Could not auto-detect GPU (WebGL blocked)");
         setIsNonDiscrete(true);
-        setShowManual(true);
+        if (!persisted) setShowManual(true);
       }
       setDetecting(false);
     })();
@@ -108,7 +123,14 @@ const Earn = () => {
     setRawRenderer(null);
     setShowManual(false);
     setDetectionMsg(null);
+    persistGPU(name);
   }, []);
+
+  const scrollToManual = () => {
+    setShowManual(true);
+    setManualSelectorFocus(true);
+    setTimeout(() => manualRef.current?.scrollIntoView({ behavior: "smooth", block: "center" }), 100);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -169,6 +191,11 @@ const Earn = () => {
           </p>
         </header>
 
+        {/* Non-discrete GPU banner */}
+        {!detecting && isNonDiscrete && rawRenderer && isKnown && (
+          <GPUDetectionBanner rawRenderer={cleanGPUName || rawRenderer} onSelectManually={scrollToManual} />
+        )}
+
         {/* GPU Detection Card */}
         <Card title="Your Hardware" icon="🔍">
           {detecting ? (
@@ -197,42 +224,48 @@ const Earn = () => {
                   </div>
                 </>
               )}
+              {/* Manual override link */}
+              <button
+                onClick={scrollToManual}
+                className="mt-4 text-xs text-secondary hover:underline"
+              >
+                Not your GPU? Select manually →
+              </button>
             </div>
           ) : (
             <>
-              {detectionMsg && (
+              {/* Non-discrete banner when no GPU selected yet */}
+              {isNonDiscrete && rawRenderer && (
+                <GPUDetectionBanner rawRenderer={cleanGPUName || rawRenderer} onSelectManually={() => setManualSelectorFocus(true)} />
+              )}
+              {detectionMsg && !isNonDiscrete && (
                 <div className="flex items-start gap-2 py-2">
                   <AlertTriangle className="h-4 w-4 text-primary mt-0.5 shrink-0" />
                   <p className="text-sm text-muted-foreground leading-relaxed">{detectionMsg}</p>
                 </div>
               )}
-              {rawRenderer && isNonDiscrete && (
-                <p className="text-xs text-muted-foreground mt-1 break-all">Raw: {rawRenderer}</p>
-              )}
             </>
           )}
 
-          {/* Dropdown — prominent when detection fails */}
+          {/* Searchable GPU selector — prominent when detection fails */}
           {(showManual || (!isKnown && !detecting)) && (
-            <div className="mt-4">
+            <div className="mt-4" ref={manualRef}>
               <p className="text-sm font-medium text-foreground mb-3">
                 Select your GPU to see your earnings estimate
               </p>
-              <select
-                className={`w-full rounded-lg border bg-muted px-4 py-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/60 transition-all ${
-                  isNonDiscrete ? "border-primary/50 animate-pulse-border text-base" : "border-border"
-                }`}
-                onChange={(e) => selectGPU(e.target.value)}
-                value={selectedDropdown}
-              >
-                <option value="" disabled>Choose your GPU...</option>
-                {GPU_SELECT_OPTIONS.map(g => (
-                  <option key={g} value={g}>NVIDIA {g}</option>
-                ))}
-                <option value="other">Other / Not Listed</option>
-              </select>
+              <GPUManualSelector
+                currentGPU={selectedDropdown}
+                onSelect={selectGPU}
+                autoFocus={manualSelectorFocus}
+              />
             </div>
           )}
+
+          {/* Tip for accurate detection */}
+          <p className="mt-4 text-xs text-muted-foreground flex items-start gap-1.5">
+            <Info className="h-3 w-3 text-primary mt-0.5 shrink-0" />
+            For accurate detection, use Chrome or Edge with hardware acceleration enabled
+          </p>
         </Card>
 
         {/* Earnings Report */}
