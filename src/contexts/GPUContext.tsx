@@ -4,7 +4,7 @@ import {
   calcEarnings, calcComparison, parseGPUName, getNonDiscreteMessage, autoMatchDropdown,
   type GPUInfo, type LiveGPUData,
 } from "@/lib/gpu-data";
-import { getPersistedGPU, persistGPU } from "@/components/earn/GPUManualSelector";
+import { getPersistedGPU, persistGPU } from "@/lib/gpu-persist";
 
 interface GPUContextValue {
   detecting: boolean;
