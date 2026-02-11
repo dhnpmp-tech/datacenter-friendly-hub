@@ -3,22 +3,27 @@ import HeroSection from "@/components/HeroSection";
 import ProblemSolutionSection from "@/components/ProblemSolutionSection";
 import HowItWorksSection from "@/components/HowItWorksSection";
 import AdvantagesSection from "@/components/AdvantagesSection";
+import EarningsCalculatorSection from "@/components/EarningsCalculatorSection";
 import EarlyAccessSection from "@/components/EarlyAccessSection";
 import TrustBar from "@/components/TrustBar";
 import Footer from "@/components/Footer";
+import { GPUProvider } from "@/contexts/GPUContext";
 
 const Index = () => {
   return (
-    <div className="min-h-screen bg-background">
-      <Navbar />
-      <HeroSection />
-      <ProblemSolutionSection />
-      <HowItWorksSection />
-      <AdvantagesSection />
-      <EarlyAccessSection />
-      <TrustBar />
-      <Footer />
-    </div>
+    <GPUProvider>
+      <div className="min-h-screen bg-background">
+        <Navbar />
+        <HeroSection />
+        <ProblemSolutionSection />
+        <HowItWorksSection />
+        <AdvantagesSection />
+        <EarningsCalculatorSection />
+        <EarlyAccessSection />
+        <TrustBar />
+        <Footer />
+      </div>
+    </GPUProvider>
   );
 };
 

@@ -1,9 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Server, Terminal } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { trackEvent } from "@/lib/analytics";
+import { useGPUDetection } from "@/contexts/GPUContext";
+import { ENERGY } from "@/lib/gpu-data";
 
 const hearAboutOptions = [
   "Twitter/X",
@@ -45,6 +47,24 @@ const EarlyAccessSection = () => {
   const [tab, setTab] = useState<"provider" | "renter">("provider");
   const [submitting, setSubmitting] = useState(false);
   const { toast } = useToast();
+  const { isKnown, gpuDisplayName, gpuInfo, detectedGPU } = useGPUDetection();
+
+  // Auto-fill GPU fields when GPU is detected
+  useEffect(() => {
+    if (!isKnown || !gpuInfo) return;
+    // Auto-fill GPU models input
+    const gpuInput = document.getElementById("gpuModels") as HTMLInputElement | null;
+    if (gpuInput && !gpuInput.value) gpuInput.value = gpuDisplayName;
+    // Auto-check GPU checkbox
+    const gpuCheckbox = document.querySelector('input[name="hardwareType"][value="GPU"]') as HTMLInputElement | null;
+    if (gpuCheckbox && !gpuCheckbox.checked) gpuCheckbox.checked = true;
+    // Auto-fill power cost
+    const powerInput = document.getElementById("powerCost") as HTMLInputElement | null;
+    if (powerInput && !powerInput.value) {
+      const monthlyCostSAR = Math.round((gpuInfo.tdp * 1.3 / 1000) * ENERGY.dc1 * 720 * 3.75); // convert USD to SAR
+      powerInput.value = String(monthlyCostSAR);
+    }
+  }, [isKnown, gpuInfo, gpuDisplayName, tab]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
