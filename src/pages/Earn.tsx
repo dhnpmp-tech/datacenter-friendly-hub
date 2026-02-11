@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
-import { Loader2 } from "lucide-react";
+import { Loader2, CheckCircle2, AlertTriangle } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,6 +10,7 @@ import { trackEvent } from "@/lib/analytics";
 import {
   GPU_DB, GPU_SELECT_OPTIONS, LOCATION_OPTIONS,
   detectGPU, matchGPU, getMarketPrice, calcEarnings, calcComparison,
+  parseGPUName, getNonDiscreteMessage, autoMatchDropdown,
   type GPUInfo, type LiveGPUData,
 } from "@/lib/gpu-data";
 
@@ -26,8 +27,11 @@ const Earn = () => {
   const [detecting, setDetecting] = useState(true);
   const [detectedGPU, setDetectedGPU] = useState<string | null>(null);
   const [rawRenderer, setRawRenderer] = useState<string | null>(null);
+  const [cleanGPUName, setCleanGPUName] = useState<string | null>(null);
   const [showManual, setShowManual] = useState(false);
   const [detectionMsg, setDetectionMsg] = useState<string | null>(null);
+  const [isNonDiscrete, setIsNonDiscrete] = useState(false);
+  const [selectedDropdown, setSelectedDropdown] = useState("");
 
   // Data
   const [liveData, setLiveData] = useState<LiveGPUData | null>(null);
@@ -62,21 +66,50 @@ const Earn = () => {
 
       const detection = detectGPU();
       if (detection) {
+        setRawRenderer(detection.renderer);
+
+        // Check for non-discrete GPU first
+        const nonDiscreteMsg = getNonDiscreteMessage(detection.renderer);
+        if (nonDiscreteMsg) {
+          setDetectionMsg(nonDiscreteMsg);
+          setIsNonDiscrete(true);
+          const parsed = parseGPUName(detection.renderer);
+          if (parsed) setCleanGPUName(parsed.clean);
+          setShowManual(true);
+          setDetecting(false);
+          return;
+        }
+
+        // Parse the clean name from raw WebGL string
+        const parsed = parseGPUName(detection.renderer);
+        if (parsed) {
+          setCleanGPUName(parsed.clean);
+
+          // Try to auto-match to dropdown
+          const autoMatch = autoMatchDropdown(parsed.clean);
+          if (autoMatch && GPU_DB[autoMatch]) {
+            setDetectedGPU(autoMatch);
+            setSelectedDropdown(autoMatch);
+            setMarketPrice(getMarketPrice(autoMatch, live));
+            setDetecting(false);
+            return;
+          }
+        }
+
+        // Fallback to old matchGPU logic
         const matched = matchGPU(detection.renderer);
         if (matched && GPU_DB[matched]) {
           setDetectedGPU(matched);
-          setRawRenderer(detection.renderer);
+          setSelectedDropdown(matched);
           setMarketPrice(getMarketPrice(matched, live));
-        } else if (matched) {
-          setDetectedGPU(matched);
-          setRawRenderer(detection.renderer);
-          setShowManual(true);
         } else {
-          setDetectionMsg(`Detected: ${detection.renderer || "Unknown"}`);
+          // Discrete but not in our list
+          setDetectionMsg(parsed?.clean || detection.renderer);
           setShowManual(true);
         }
       } else {
         setDetectionMsg("Could not auto-detect GPU (WebGL blocked)");
+        setIsNonDiscrete(true);
         setShowManual(true);
       }
       setDetecting(false);
@@ -86,11 +119,15 @@ const Earn = () => {
   const selectGPU = useCallback((name: string) => {
     if (name === "other") {
       setDetectedGPU("other");
+      setSelectedDropdown("other");
       return;
     }
     setDetectedGPU(name);
+    setSelectedDropdown(name);
     setRawRenderer(null);
     setShowManual(false);
+    setIsNonDiscrete(false);
+    setDetectionMsg(null);
     setMarketPrice(getMarketPrice(name, liveData));
   }, [liveData]);
 
@@ -155,12 +192,18 @@ const Earn = () => {
               <Loader2 className="h-5 w-5 animate-spin text-primary" />
               <span className="text-muted-foreground">Detecting your GPU...</span>
             </div>
-          ) : detectedGPU && detectedGPU !== "other" ? (
+          ) : detectedGPU && detectedGPU !== "other" && isKnown ? (
             <div>
-              <p className="text-2xl font-bold text-white">{gpuDisplayName}</p>
+              <div className="flex items-center gap-2">
+                <CheckCircle2 className="h-5 w-5 text-green-400 shrink-0" />
+                <p className="text-2xl font-bold text-foreground">{cleanGPUName || `NVIDIA ${detectedGPU}`}</p>
+              </div>
+              {rawRenderer && rawRenderer !== cleanGPUName && (
+                <p className="text-xs text-muted-foreground mt-1.5 break-all">Raw: {rawRenderer}</p>
+              )}
               {gpuInfo && (
                 <>
-                  <p className="text-sm text-muted-foreground">{gpuInfo.vram}GB VRAM · {gpuInfo.tdp}W TDP</p>
+                  <p className="text-sm text-muted-foreground mt-2">{gpuInfo.vram}GB VRAM · {gpuInfo.tdp}W TDP</p>
                   <span className={`mt-3 inline-block rounded-full px-3 py-1 text-xs font-semibold ${tierBadge[gpuInfo.tier].className}`}>
                     {tierBadge[gpuInfo.tier].label}
                   </span>
@@ -172,18 +215,31 @@ const Earn = () => {
               )}
             </div>
           ) : (
-            detectionMsg && <p className="text-sm text-muted-foreground py-2">{detectionMsg}</p>
+            <>
+              {detectionMsg && (
+                <div className="flex items-start gap-2 py-2">
+                  <AlertTriangle className="h-4 w-4 text-primary mt-0.5 shrink-0" />
+                  <p className="text-sm text-muted-foreground leading-relaxed">{detectionMsg}</p>
+                </div>
+              )}
+              {rawRenderer && isNonDiscrete && (
+                <p className="text-xs text-muted-foreground mt-1 break-all">Raw: {rawRenderer}</p>
+              )}
+            </>
           )}
 
-          {showManual && (
+          {/* Dropdown — prominent when detection fails */}
+          {(showManual || (!isKnown && !detecting)) && (
             <div className="mt-4">
-              <p className="text-sm text-muted-foreground mb-3">
-                {detectedGPU ? "Select your exact GPU:" : "Couldn't auto-detect. Select your GPU:"}
+              <p className="text-sm font-medium text-foreground mb-3">
+                Select your GPU to see your earnings estimate
               </p>
               <select
-                className="w-full rounded-lg border border-border bg-muted px-4 py-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/60"
+                className={`w-full rounded-lg border bg-muted px-4 py-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/60 transition-all ${
+                  isNonDiscrete ? "border-primary/50 animate-pulse-border text-base" : "border-border"
+                }`}
                 onChange={(e) => selectGPU(e.target.value)}
-                defaultValue=""
+                value={selectedDropdown}
               >
                 <option value="" disabled>Choose your GPU...</option>
                 {GPU_SELECT_OPTIONS.map(g => (

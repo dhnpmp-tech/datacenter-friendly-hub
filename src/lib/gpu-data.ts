@@ -49,6 +49,81 @@ export const LOCATION_OPTIONS = [
   { value: 'OTHER', label: 'Other', flag: '🌍' },
 ];
 
+// Parse clean GPU name from raw WebGL renderer string
+export function parseGPUName(raw: string): { clean: string; vendor: 'nvidia' | 'amd' | 'intel' | 'apple' | 'software' | 'unknown' } | null {
+  if (!raw) return null;
+
+  // Detect software renderers
+  if (/Microsoft Basic Render/i.test(raw) || /SwiftShader/i.test(raw)) {
+    return { clean: raw, vendor: 'software' };
+  }
+  // Detect integrated Intel
+  if (/Intel\s*(UHD|Iris|HD)/i.test(raw)) {
+    const match = raw.match(/(Intel\s*(?:UHD|Iris|HD)\s*Graphics?\s*\w*)/i);
+    return { clean: match ? match[1].trim() : 'Intel Integrated Graphics', vendor: 'intel' };
+  }
+  // Detect Apple Silicon
+  if (/Apple\s*(GPU|M\d)/i.test(raw)) {
+    const match = raw.match(/(Apple\s*M\d+\s*(?:Pro|Max|Ultra)?)/i);
+    return { clean: match ? match[1].trim() : 'Apple GPU', vendor: 'apple' };
+  }
+
+  // Extract discrete GPU names
+  const gpuPatterns: [RegExp, 'nvidia' | 'amd'][] = [
+    [/(GeForce\s*[A-Z]+\s*\d{3,5}\s*(?:Ti|SUPER|XT|XTX)?)/i, 'nvidia'],
+    [/(Quadro\s*[A-Z]*\s*\d{3,5}\s*\w*)/i, 'nvidia'],
+    [/(Tesla\s*[A-Z]\d+\w*)/i, 'nvidia'],
+    [/\b((?:A|H|L)\d{2,3})\b/i, 'nvidia'],
+    [/(Radeon\s*(?:RX|Pro)\s*\d{3,5}\s*(?:XT|XTX)?)/i, 'amd'],
+  ];
+
+  for (const [pattern, vendor] of gpuPatterns) {
+    const match = raw.match(pattern);
+    if (match) {
+      const clean = match[1].trim();
+      const prefix = vendor === 'nvidia' && !clean.startsWith('Radeon') ? 'NVIDIA ' : (vendor === 'amd' ? 'AMD ' : '');
+      return { clean: `${prefix}${clean}`, vendor };
+    }
+  }
+
+  // Fallback vendor detection
+  const upper = raw.toUpperCase();
+  if (upper.includes('NVIDIA') || upper.includes('GEFORCE')) return { clean: raw, vendor: 'nvidia' };
+  if (upper.includes('RADEON') || upper.includes('AMD')) return { clean: raw, vendor: 'amd' };
+
+  return { clean: raw, vendor: 'unknown' };
+}
+
+// Get a non-discrete GPU message or null if it's discrete
+export function getNonDiscreteMessage(raw: string): string | null {
+  if (/Microsoft Basic Render/i.test(raw))
+    return "Software renderer detected. Your GPU isn't visible to the browser. Enable hardware acceleration in browser settings and refresh, or select your GPU below.";
+  if (/Intel\s*(UHD|Iris|HD)/i.test(raw))
+    return "Integrated graphics detected (Intel). If you have a dedicated NVIDIA or AMD card, select it below for accurate earnings.";
+  if (/SwiftShader/i.test(raw))
+    return "Software renderer detected. Select your GPU manually below.";
+  if (/Apple\s*(GPU|M\d)/i.test(raw))
+    return "Apple Silicon detected. Select your specific chip below.";
+  return null;
+}
+
+// Auto-match a parsed GPU name to a dropdown entry
+export function autoMatchDropdown(cleanName: string): string | null {
+  const norm = cleanName.toLowerCase().replace(/\s+/g, '');
+  for (const opt of GPU_SELECT_OPTIONS) {
+    const optNorm = opt.toLowerCase().replace(/\s+/g, '');
+    if (norm.includes(optNorm)) return opt;
+  }
+  // Try just model number (e.g. "4060")
+  const modelNum = cleanName.match(/(\d{4,5})/);
+  if (modelNum) {
+    for (const opt of GPU_SELECT_OPTIONS) {
+      if (opt.includes(modelNum[1])) return opt;
+    }
+  }
+  return null;
+}
+
 // WebGL GPU Detection
 export function detectGPU(): { renderer: string; vendor: string } | null {
   try {

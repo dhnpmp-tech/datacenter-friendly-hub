@@ -76,4 +76,13 @@
   .bg-radial-glow {
     background: radial-gradient(ellipse at 50% 40%, hsl(var(--primary) / 0.06) 0%, transparent 60%);
   }
+
+  @keyframes pulse-border {
+    0%, 100% { border-color: hsl(var(--primary) / 0.3); }
+    50% { border-color: hsl(var(--primary) / 0.7); }
+  }
+
+  .animate-pulse-border {
+    animation: pulse-border 2s ease-in-out infinite;
+  }
 }
