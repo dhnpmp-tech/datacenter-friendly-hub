@@ -8,7 +8,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { trackEvent } from "@/lib/analytics";
 import EarningsReport from "@/components/EarningsReport";
 import GPUDetectionBanner from "@/components/earn/GPUDetectionBanner";
-import GPUManualSelector, { getPersistedGPU, persistGPU } from "@/components/earn/GPUManualSelector";
+import GPUManualSelector from "@/components/earn/GPUManualSelector";
+import { getPersistedGPU, persistGPU } from "@/lib/gpu-persist";
 import {
   GPU_DB, GPU_SELECT_OPTIONS, LOCATION_OPTIONS,
   detectGPU, matchGPU,
