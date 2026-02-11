@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import dc1Logo from "@/assets/dc1-logo.jpg";
 import { Twitter, Linkedin } from "lucide-react";
 
@@ -30,6 +31,12 @@ const Footer = () => {
                 {link.label}
               </a>
             ))}
+            <Link
+              to="/privacy"
+              className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+            >
+              Privacy Policy
+            </Link>
           </div>
 
           {/* Right */}
