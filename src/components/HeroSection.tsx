@@ -1,6 +1,8 @@
 import { useEffect } from "react";
 import { motion } from "framer-motion";
 import { trackEvent } from "@/lib/analytics";
+import { useGPUDetection } from "@/contexts/GPUContext";
+import { GPU_SELECT_OPTIONS } from "@/lib/gpu-data";
 
 const stats = [
   { value: "12", label: "Providers" },
@@ -10,6 +12,8 @@ const stats = [
 ];
 
 const HeroSection = () => {
+  const { detecting, detectedGPU, isKnown, earnings, gpuDisplayName, selectGPU } = useGPUDetection();
+
   useEffect(() => {
     trackEvent("page_view", { page: "home" });
   }, []);
@@ -38,6 +42,46 @@ const HeroSection = () => {
           <p className="mt-6 max-w-2xl text-lg leading-relaxed text-muted-foreground md:text-xl">
             The decentralized compute marketplace built on Saudi Arabia's most competitive energy.
           </p>
+
+          {/* GPU Detection Banner */}
+          {!detecting && (
+            <motion.div
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.3 }}
+              className="mt-8 w-full max-w-lg"
+            >
+              {isKnown && earnings ? (
+                <div className="rounded-xl border border-green-500/30 bg-green-500/10 px-6 py-4">
+                  <p className="text-sm text-green-400">
+                    We detected your <span className="font-bold text-white">{gpuDisplayName}</span> — you could earn{" "}
+                    <span className="font-bold text-green-300">${Math.round(earnings.monthlyEarning)}/mo</span>
+                  </p>
+                  <a
+                    href="#earnings-calculator"
+                    onClick={() => handleCtaClick("see_your_earnings")}
+                    className="mt-3 inline-block rounded-lg bg-green-500 px-6 py-2 text-sm font-bold text-black transition-all hover:brightness-110"
+                  >
+                    See Your Earnings
+                  </a>
+                </div>
+              ) : (
+                <div className="rounded-xl border border-border bg-card px-6 py-4">
+                  <p className="text-sm text-muted-foreground mb-3">Select your GPU to see earnings</p>
+                  <select
+                    className="w-full rounded-lg border border-border bg-muted px-4 py-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/60"
+                    onChange={(e) => { selectGPU(e.target.value); handleCtaClick("manual_gpu_select"); }}
+                    defaultValue=""
+                  >
+                    <option value="" disabled>Choose your GPU...</option>
+                    {GPU_SELECT_OPTIONS.map(g => (
+                      <option key={g} value={g}>NVIDIA {g}</option>
+                    ))}
+                  </select>
+                </div>
+              )}
+            </motion.div>
+          )}
 
           <div className="mt-10 flex flex-col gap-4 sm:flex-row">
             <a
