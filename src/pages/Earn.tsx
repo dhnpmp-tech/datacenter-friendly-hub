@@ -379,7 +379,7 @@ function Card({ title, icon, children }: { title: string; icon: string; children
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
-      className="relative rounded-2xl border border-border bg-card p-7 mb-5 overflow-hidden"
+      className="relative rounded-2xl border border-border bg-card p-7 mb-5"
     >
       <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-primary to-green-500" />
       <p className="text-xs uppercase tracking-[1.5px] text-muted-foreground mb-4">
