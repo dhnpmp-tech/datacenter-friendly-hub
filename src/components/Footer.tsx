@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import dc1Logo from "@/assets/dc1-logo.jpg";
+import dc1Logo from "@/assets/dc1-logo.webp";
 import { Twitter, Linkedin } from "lucide-react";
 
 const navLinks = [
