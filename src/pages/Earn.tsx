@@ -191,6 +191,11 @@ const Earn = () => {
           </p>
         </header>
 
+        {/* Non-discrete GPU banner */}
+        {!detecting && isNonDiscrete && rawRenderer && isKnown && (
+          <GPUDetectionBanner rawRenderer={cleanGPUName || rawRenderer} onSelectManually={scrollToManual} />
+        )}
+
         {/* GPU Detection Card */}
         <Card title="Your Hardware" icon="🔍">
           {detecting ? (
@@ -219,42 +224,48 @@ const Earn = () => {
                   </div>
                 </>
               )}
+              {/* Manual override link */}
+              <button
+                onClick={scrollToManual}
+                className="mt-4 text-xs text-secondary hover:underline"
+              >
+                Not your GPU? Select manually →
+              </button>
             </div>
           ) : (
             <>
-              {detectionMsg && (
+              {/* Non-discrete banner when no GPU selected yet */}
+              {isNonDiscrete && rawRenderer && (
+                <GPUDetectionBanner rawRenderer={cleanGPUName || rawRenderer} onSelectManually={() => setManualSelectorFocus(true)} />
+              )}
+              {detectionMsg && !isNonDiscrete && (
                 <div className="flex items-start gap-2 py-2">
                   <AlertTriangle className="h-4 w-4 text-primary mt-0.5 shrink-0" />
                   <p className="text-sm text-muted-foreground leading-relaxed">{detectionMsg}</p>
                 </div>
               )}
-              {rawRenderer && isNonDiscrete && (
-                <p className="text-xs text-muted-foreground mt-1 break-all">Raw: {rawRenderer}</p>
-              )}
             </>
           )}
 
-          {/* Dropdown — prominent when detection fails */}
+          {/* Searchable GPU selector — prominent when detection fails */}
           {(showManual || (!isKnown && !detecting)) && (
-            <div className="mt-4">
+            <div className="mt-4" ref={manualRef}>
               <p className="text-sm font-medium text-foreground mb-3">
                 Select your GPU to see your earnings estimate
               </p>
-              <select
-                className={`w-full rounded-lg border bg-muted px-4 py-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/60 transition-all ${
-                  isNonDiscrete ? "border-primary/50 animate-pulse-border text-base" : "border-border"
-                }`}
-                onChange={(e) => selectGPU(e.target.value)}
-                value={selectedDropdown}
-              >
-                <option value="" disabled>Choose your GPU...</option>
-                {GPU_SELECT_OPTIONS.map(g => (
-                  <option key={g} value={g}>NVIDIA {g}</option>
-                ))}
-                <option value="other">Other / Not Listed</option>
-              </select>
+              <GPUManualSelector
+                currentGPU={selectedDropdown}
+                onSelect={selectGPU}
+                autoFocus={manualSelectorFocus}
+              />
             </div>
           )}
+
+          {/* Tip for accurate detection */}
+          <p className="mt-4 text-xs text-muted-foreground flex items-start gap-1.5">
+            <Info className="h-3 w-3 text-primary mt-0.5 shrink-0" />
+            For accurate detection, use Chrome or Edge with hardware acceleration enabled
+          </p>
         </Card>
 
         {/* Earnings Report */}
