@@ -123,7 +123,14 @@ const Earn = () => {
     setRawRenderer(null);
     setShowManual(false);
     setDetectionMsg(null);
+    persistGPU(name);
   }, []);
+
+  const scrollToManual = () => {
+    setShowManual(true);
+    setManualSelectorFocus(true);
+    setTimeout(() => manualRef.current?.scrollIntoView({ behavior: "smooth", block: "center" }), 100);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
