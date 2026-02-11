@@ -48,8 +48,14 @@ const Earn = () => {
   const gpuInfo: GPUInfo | undefined = detectedGPU ? GPU_DB[detectedGPU] : undefined;
   const isKnown = !!gpuInfo;
 
-  // Detect GPU on mount
+  // Detect GPU on mount (check localStorage first)
   useEffect(() => {
+    const persisted = getPersistedGPU();
+    if (persisted) {
+      setDetectedGPU(persisted);
+      setSelectedDropdown(persisted);
+    }
+
     (async () => {
       const detection = detectGPU();
       if (detection) {
@@ -62,7 +68,8 @@ const Earn = () => {
           setIsNonDiscrete(true);
           const parsed = parseGPUName(detection.renderer);
           if (parsed) setCleanGPUName(parsed.clean);
-          setShowManual(true);
+          // If we have a persisted selection, don't force manual
+          if (!persisted) setShowManual(true);
           setDetecting(false);
           return;
         }
@@ -75,8 +82,10 @@ const Earn = () => {
           // Try to auto-match to dropdown
           const autoMatch = autoMatchDropdown(parsed.clean);
           if (autoMatch && GPU_DB[autoMatch]) {
-            setDetectedGPU(autoMatch);
-            setSelectedDropdown(autoMatch);
+            if (!persisted) {
+              setDetectedGPU(autoMatch);
+              setSelectedDropdown(autoMatch);
+            }
             setDetecting(false);
             return;
           }
@@ -85,17 +94,19 @@ const Earn = () => {
         // Fallback to old matchGPU logic
         const matched = matchGPU(detection.renderer);
         if (matched && GPU_DB[matched]) {
-          setDetectedGPU(matched);
-          setSelectedDropdown(matched);
+          if (!persisted) {
+            setDetectedGPU(matched);
+            setSelectedDropdown(matched);
+          }
         } else {
           // Discrete but not in our list
           setDetectionMsg(parsed?.clean || detection.renderer);
-          setShowManual(true);
+          if (!persisted) setShowManual(true);
         }
       } else {
         setDetectionMsg("Could not auto-detect GPU (WebGL blocked)");
         setIsNonDiscrete(true);
-        setShowManual(true);
+        if (!persisted) setShowManual(true);
       }
       setDetecting(false);
     })();
