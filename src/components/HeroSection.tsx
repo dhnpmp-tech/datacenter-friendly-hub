@@ -6,6 +6,7 @@ import { useGPUDetection } from "@/contexts/GPUContext";
 import GPUDetectionBanner from "@/components/earn/GPUDetectionBanner";
 import GPUManualSelector from "@/components/earn/GPUManualSelector";
 import { useIsMobile } from "@/hooks/use-mobile";
+import DualPrice from "@/components/DualPrice";
 
 const stats = [
   { value: "12", label: "Providers" },
