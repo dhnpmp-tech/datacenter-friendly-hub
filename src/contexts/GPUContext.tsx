@@ -116,7 +116,7 @@ export function GPUProvider({ children }: { children: ReactNode }) {
   const isKnown = !!gpuInfo;
   const earnings = isKnown ? calcEarnings(detectedGPU!, marketPrice, utilization / 100) : null;
   const comparison = isKnown ? calcComparison(detectedGPU!, marketPrice, utilization / 100) : null;
-  const gpuDisplayName = isKnown ? `NVIDIA ${detectedGPU}` : (rawRenderer || detectedGPU || "");
+  const gpuDisplayName = cleanGPUName || (isKnown ? `NVIDIA ${detectedGPU}` : (rawRenderer || detectedGPU || ""));
 
   return (
     <GPUContext.Provider value={{

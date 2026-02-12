@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { motion } from "framer-motion";
-import { Loader2, CheckCircle2, AlertTriangle, Info } from "lucide-react";
+import { Loader2, CheckCircle2, AlertTriangle, Info, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
@@ -9,6 +9,7 @@ import { trackEvent } from "@/lib/analytics";
 import EarningsReport from "@/components/EarningsReport";
 import GPUDetectionBanner from "@/components/earn/GPUDetectionBanner";
 import GPUManualSelector from "@/components/earn/GPUManualSelector";
+import DualPrice from "@/components/DualPrice";
 import { getPersistedGPU, persistGPU } from "@/lib/gpu-persist";
 import {
   GPU_DB, GPU_SELECT_OPTIONS, LOCATION_OPTIONS,
@@ -36,6 +37,8 @@ const Earn = () => {
   const [isNonDiscrete, setIsNonDiscrete] = useState(false);
   const [selectedDropdown, setSelectedDropdown] = useState("");
   const [manualSelectorFocus, setManualSelectorFocus] = useState(false);
+  const [showRawDetails, setShowRawDetails] = useState(false);
+  const [autoMatched, setAutoMatched] = useState(false);
   const manualRef = useRef<HTMLDivElement>(null);
 
   // Form
@@ -86,6 +89,7 @@ const Earn = () => {
             if (!persisted) {
               setDetectedGPU(autoMatch);
               setSelectedDropdown(autoMatch);
+              setAutoMatched(true);
             }
             setDetecting(false);
             return;
@@ -98,6 +102,7 @@ const Earn = () => {
           if (!persisted) {
             setDetectedGPU(matched);
             setSelectedDropdown(matched);
+            setAutoMatched(true);
           }
         } else {
           // Discrete but not in our list
@@ -124,6 +129,7 @@ const Earn = () => {
     setRawRenderer(null);
     setShowManual(false);
     setDetectionMsg(null);
+    setAutoMatched(false);
     persistGPU(name);
   }, []);
 
@@ -206,25 +212,72 @@ const Earn = () => {
             </div>
           ) : detectedGPU && detectedGPU !== "other" && isKnown ? (
             <div>
+              {/* Clean GPU name */}
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="h-5 w-5 text-green-400 shrink-0" />
-                <p className="text-2xl font-bold text-foreground">{cleanGPUName || `NVIDIA ${detectedGPU}`}</p>
+                <p className="text-2xl font-bold text-foreground">
+                  {cleanGPUName || `NVIDIA ${detectedGPU}`}
+                </p>
               </div>
-              {rawRenderer && rawRenderer !== cleanGPUName && (
-                <p className="text-xs text-muted-foreground mt-1.5 break-all">Raw: {rawRenderer}</p>
+
+              {/* Specs subtitle */}
+              {gpuInfo && (
+                <p className="text-sm text-muted-foreground mt-1.5">
+                  {gpuInfo.vram}GB VRAM · {gpuInfo.tdp}W TDP
+                </p>
               )}
+
+              {/* Auto-matched badge */}
+              {autoMatched && (
+                <p className="text-xs text-green-400/80 mt-1.5 flex items-center gap-1">
+                  <CheckCircle2 className="h-3 w-3" /> Auto-matched from detection
+                </p>
+              )}
+
+              {/* Raw details toggle */}
+              {rawRenderer && (
+                <button
+                  onClick={() => setShowRawDetails(!showRawDetails)}
+                  className="mt-2 text-[11px] text-muted-foreground/60 hover:text-muted-foreground transition-colors inline-flex items-center gap-1"
+                >
+                  <ChevronDown className={`h-3 w-3 transition-transform ${showRawDetails ? "rotate-180" : ""}`} />
+                  {showRawDetails ? "Hide" : "Show"} raw details
+                </button>
+              )}
+              {showRawDetails && rawRenderer && (
+                <p className="text-[11px] text-muted-foreground/50 mt-1 break-all font-mono leading-relaxed">
+                  {rawRenderer}
+                </p>
+              )}
+
+              {/* Earnings preview */}
               {gpuInfo && (
                 <>
-                  <p className="text-sm text-muted-foreground mt-2">{gpuInfo.vram}GB VRAM · {gpuInfo.tdp}W TDP</p>
+                  <div className="mt-4 rounded-lg bg-green-500/10 border border-green-500/20 px-4 py-3">
+                    <p className="text-sm text-green-400">
+                      Estimated earnings:{" "}
+                      <span className="font-bold">
+                        <DualPrice
+                          usd={gpuInfo.rate * gpuInfo.utilization * 0.85}
+                          period="/hr"
+                          primaryClassName="text-green-300 font-bold"
+                          secondaryClassName="text-green-400/60"
+                        />
+                      </span>
+                    </p>
+                  </div>
+
                   <span className={`mt-3 inline-block rounded-full px-3 py-1 text-xs font-semibold ${tierBadge[gpuInfo.tier].className}`}>
                     {tierBadge[gpuInfo.tier].label}
                   </span>
-                  <div className="mt-5 grid grid-cols-2 gap-3">
+
+                  <div className="mt-4 grid grid-cols-2 gap-3">
                     <SpecItem label="GPU Cores" value={gpuInfo.cores} />
                     <SpecItem label="Platform" value={navigator.platform || "Unknown"} />
                   </div>
                 </>
               )}
+
               {/* Manual override link */}
               <button
                 onClick={scrollToManual}
@@ -320,7 +373,7 @@ const Earn = () => {
                   </div>
                   <div>
                     <label className="block text-xs text-muted-foreground mb-1.5">Detected GPU</label>
-                    <Input value={gpuDisplayName || "Other"} readOnly />
+                    <Input value={isKnown ? (cleanGPUName || `NVIDIA ${detectedGPU}`) : (gpuDisplayName || "Other")} readOnly />
                   </div>
                 </div>
                 <div>
