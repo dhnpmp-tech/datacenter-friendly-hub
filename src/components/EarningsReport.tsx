@@ -5,6 +5,7 @@ import {
   GPU_DB, ENERGY_BY_COUNTRY, DEFAULT_ENERGY_RATE,
   type GPUInfo,
 } from "@/lib/gpu-data";
+import { useCurrency } from "@/contexts/CurrencyContext";
 
 interface EarningsReportProps {
   gpuName: string;
@@ -49,6 +50,7 @@ function useAnimatedNumber(target: number, duration = 300) {
 }
 
 const EarningsReport = ({ gpuName, gpuCount = 1, onCountryDetected }: EarningsReportProps) => {
+  const { dual } = useCurrency();
   const [countryCode, setCountryCode] = useState<string | null>(null);
   const [countryLabel, setCountryLabel] = useState("Detecting...");
   const [userEnergyRate, setUserEnergyRate] = useState<number>(DEFAULT_ENERGY_RATE);
@@ -125,13 +127,8 @@ const EarningsReport = ({ gpuName, gpuCount = 1, onCountryDetected }: EarningsRe
 
   const flag = countryCode ? COUNTRY_FLAGS[countryCode] || "" : "";
 
-  const fmt = (n: number) => {
-    const abs = Math.abs(n);
-    if (abs >= 1000) return `$${abs.toLocaleString("en-US", { maximumFractionDigits: 0 })}`;
-    if (abs >= 10) return `$${abs.toFixed(0)}`;
-    return `$${abs.toFixed(2)}`;
-  };
-  const fmtSigned = (n: number) => n < 0 ? `-${fmt(n)}` : fmt(n);
+  const fmtDual = (usd: number, period: string) => dual(usd, period);
+  const fmtDualAbs = (usd: number, period: string) => dual(Math.abs(usd), period);
 
   const handleEditSave = () => {
     const v = parseFloat(editValue);
@@ -152,6 +149,11 @@ const EarningsReport = ({ gpuName, gpuCount = 1, onCountryDetected }: EarningsRe
   const animRevMonthly = useAnimatedNumber(revenueForProvider * gpuCount);
   const animPwrHourly = useAnimatedNumber(powerHourlyUser * gpuCount);
   const animPwrMonthly = useAnimatedNumber(powerMonthlyUser * gpuCount);
+
+  const revHrDual = fmtDual(animRevHourly, "/hr");
+  const revMoDual = fmtDual(animRevMonthly, "/mo");
+  const pwrHrDual = fmtDual(animPwrHourly, "/hr");
+  const pwrMoDual = fmtDual(animPwrMonthly, "/mo");
 
   return (
     <motion.div
@@ -175,12 +177,16 @@ const EarningsReport = ({ gpuName, gpuCount = 1, onCountryDetected }: EarningsRe
           <p className="text-[10px] uppercase tracking-widest text-muted-foreground mb-3">Revenue</p>
           <div className="flex items-baseline gap-2">
             <span className="text-2xl font-bold text-foreground" style={{ fontVariantNumeric: "tabular-nums" }}>
-              ${animRevHourly.toFixed(3)}/hr
+              {revHrDual.primary}
             </span>
+            <span className="text-sm text-muted-foreground">{revHrDual.secondary}</span>
           </div>
-          <p className="text-lg font-semibold text-foreground mt-1" style={{ fontVariantNumeric: "tabular-nums" }}>
-            ${animRevMonthly.toFixed(0)}/mo
-          </p>
+          <div className="flex items-baseline gap-2 mt-1">
+            <span className="text-lg font-semibold text-foreground" style={{ fontVariantNumeric: "tabular-nums" }}>
+              {revMoDual.primary}
+            </span>
+            <span className="text-xs text-muted-foreground">{revMoDual.secondary}</span>
+          </div>
           <p className="text-xs text-muted-foreground mt-2">
             Market rate at {Math.round(util * 100)}% utilization
           </p>
@@ -197,12 +203,16 @@ const EarningsReport = ({ gpuName, gpuCount = 1, onCountryDetected }: EarningsRe
           <p className="text-[10px] uppercase tracking-widest text-muted-foreground mb-3">Power Cost</p>
           <div className="flex items-baseline gap-2">
             <span className="text-2xl font-bold" style={{ color: "hsl(0 84% 60% / 0.7)", fontVariantNumeric: "tabular-nums" }}>
-              ${animPwrHourly.toFixed(3)}/hr
+              {pwrHrDual.primary}
             </span>
+            <span className="text-sm text-muted-foreground">{pwrHrDual.secondary}</span>
           </div>
-          <p className="text-lg font-semibold mt-1" style={{ color: "hsl(0 84% 60% / 0.7)", fontVariantNumeric: "tabular-nums" }}>
-            ${animPwrMonthly.toFixed(0)}/mo
-          </p>
+          <div className="flex items-baseline gap-2 mt-1">
+            <span className="text-lg font-semibold" style={{ color: "hsl(0 84% 60% / 0.7)", fontVariantNumeric: "tabular-nums" }}>
+              {pwrMoDual.primary}
+            </span>
+            <span className="text-xs text-muted-foreground">{pwrMoDual.secondary}</span>
+          </div>
           <p className="text-xs text-muted-foreground mt-2">
             Based on {flag} {countryLabel}: ${userEnergyRate.toFixed(3)}/kWh
             {isCustomRate && <span className="text-muted-foreground/50"> (custom)</span>}
@@ -260,6 +270,7 @@ const EarningsReport = ({ gpuName, gpuCount = 1, onCountryDetected }: EarningsRe
               dc1Fee={null}
               net={netUser * gpuCount}
               annual={annualUser * gpuCount}
+              dual={dual}
             />
           </div>
 
@@ -274,6 +285,7 @@ const EarningsReport = ({ gpuName, gpuCount = 1, onCountryDetected }: EarningsRe
               dc1Fee={dc1Fee * gpuCount}
               net={netDC1 * gpuCount}
               annual={annualDC1 * gpuCount}
+              dual={dual}
             />
           </div>
         </div>
@@ -297,7 +309,7 @@ const EarningsReport = ({ gpuName, gpuCount = 1, onCountryDetected }: EarningsRe
           {dc1Better10 && (
             <div className="rounded-lg border border-green-500/20 bg-green-500/5 px-4 py-3">
               <p className="text-sm font-medium" style={{ color: "hsl(var(--success))" }}>
-                DC1 Advantage: +{fmt(Math.abs((netDC1 - netUser) * gpuCount))}/mo (+{Math.round(Math.abs(pctDiff))}%) — lower energy costs offset the platform fee
+                DC1 Advantage: +{fmtDualAbs(Math.abs(netDC1 - netUser) * gpuCount, "/mo").primary} (+{Math.round(Math.abs(pctDiff))}%) — lower energy costs offset the platform fee
               </p>
             </div>
           )}
@@ -311,7 +323,7 @@ const EarningsReport = ({ gpuName, gpuCount = 1, onCountryDetected }: EarningsRe
           {dc1Worse && (
             <div className="rounded-lg border border-border/30 bg-muted/30 px-4 py-3">
               <p className="text-sm text-muted-foreground">
-                DC1 costs {fmt(Math.abs(netUser - netDC1) * gpuCount)}/mo — replacing your billing, security, compliance, networking, and customer support. No staff needed.
+                DC1 costs {fmtDualAbs(Math.abs(netUser - netDC1) * gpuCount, "/mo").primary} — replacing your billing, security, compliance, networking, and customer support. No staff needed.
               </p>
             </div>
           )}
@@ -349,49 +361,58 @@ const EarningsReport = ({ gpuName, gpuCount = 1, onCountryDetected }: EarningsRe
   );
 };
 
-function ComparisonLines({ revenue, power, dc1Fee, net, annual }: {
+function ComparisonLines({ revenue, power, dc1Fee, net, annual, dual }: {
   revenue: number; power: number; dc1Fee: number | null; net: number; annual: number;
+  dual: (usd: number, period?: string) => { primary: string; secondary: string };
 }) {
-  const fmt = (n: number) => {
-    const abs = Math.abs(n);
-    if (abs >= 1000) return `$${abs.toLocaleString("en-US", { maximumFractionDigits: 0 })}`;
-    if (abs >= 10) return `$${abs.toFixed(0)}`;
-    return `$${abs.toFixed(2)}`;
-  };
-
   const netColor = net >= 0 ? "hsl(142 71% 45%)" : "hsl(0 84% 60%)";
+
+  const revDual = dual(revenue, "/mo");
+  const pwrDual = dual(power, "/mo");
+  const feeDual = dc1Fee !== null ? dual(dc1Fee, "/mo") : null;
+  const netDual = dual(Math.abs(net), "/mo");
+  const annDual = dual(Math.abs(annual), "/yr");
 
   return (
     <div className="space-y-1.5" style={{ fontVariantNumeric: "tabular-nums" }}>
-      <LineItem label="Revenue" value={`${fmt(revenue)}/mo`} className="text-foreground" />
-      <LineItem label="Power" value={`-${fmt(power)}/mo`} className="text-destructive/70" />
-      {dc1Fee !== null ? (
-        <LineItem label="DC1 fee (15%)" value={`-${fmt(dc1Fee)}/mo`} className="text-destructive/70" />
+      <LineItem label="Revenue" value={revDual.primary} secondary={revDual.secondary} className="text-foreground" />
+      <LineItem label="Power" value={`-${pwrDual.primary}`} secondary={pwrDual.secondary} className="text-destructive/70" />
+      {feeDual ? (
+        <LineItem label="DC1 fee (15%)" value={`-${feeDual.primary}`} secondary={feeDual.secondary} className="text-destructive/70" />
       ) : (
         <LineItem label="DC1 fee" value="—" className="text-muted-foreground/40" />
       )}
       <div className="border-t border-border/30 my-2" />
       <div className="flex justify-between items-baseline">
         <span className="text-sm font-semibold" style={{ color: netColor }}>Net</span>
-        <span className="text-lg font-bold" style={{ color: netColor }}>
-          {net < 0 ? "-" : ""}{fmt(net)}/mo
-        </span>
+        <div className="text-right">
+          <span className="text-lg font-bold" style={{ color: netColor }}>
+            {net < 0 ? "-" : ""}{netDual.primary}
+          </span>
+          <span className="text-xs text-muted-foreground ml-1.5">{netDual.secondary}</span>
+        </div>
       </div>
       <div className="flex justify-between items-baseline">
         <span className="text-xs" style={{ color: netColor }}>Annual</span>
-        <span className="text-sm font-semibold" style={{ color: netColor }}>
-          {annual < 0 ? "-" : ""}{fmt(annual)}/yr
-        </span>
+        <div className="text-right">
+          <span className="text-sm font-semibold" style={{ color: netColor }}>
+            {annual < 0 ? "-" : ""}{annDual.primary}
+          </span>
+          <span className="text-xs text-muted-foreground ml-1.5">{annDual.secondary}</span>
+        </div>
       </div>
     </div>
   );
 }
 
-function LineItem({ label, value, className }: { label: string; value: string; className?: string }) {
+function LineItem({ label, value, secondary, className }: { label: string; value: string; secondary?: string; className?: string }) {
   return (
     <div className="flex justify-between items-baseline">
       <span className="text-xs text-muted-foreground">{label}</span>
-      <span className={`text-sm ${className || ""}`}>{value}</span>
+      <div className="text-right">
+        <span className={`text-sm ${className || ""}`}>{value}</span>
+        {secondary && <span className="text-xs text-muted-foreground ml-1.5">{secondary}</span>}
+      </div>
     </div>
   );
 }

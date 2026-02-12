@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Menu, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import dc1Logo from "@/assets/dc1-logo.webp";
+import CurrencySwitcher from "@/components/CurrencySwitcher";
 
 const navLinks = [
   { label: "How It Works", href: "#how-it-works" },
@@ -31,7 +32,8 @@ const Navbar = () => {
           ))}
         </div>
 
-        <div className="hidden md:block">
+        <div className="hidden md:flex items-center gap-4">
+          <CurrencySwitcher />
           <a
             href="#early-access"
             className="rounded-lg bg-primary px-5 py-2 text-sm font-semibold text-primary-foreground transition-all hover:brightness-110"
@@ -64,6 +66,9 @@ const Navbar = () => {
                   {link.label}
                 </a>
               ))}
+              <div className="flex items-center gap-3">
+                <CurrencySwitcher />
+              </div>
               <a
                 href="#early-access"
                 className="mt-2 inline-block rounded-lg bg-primary px-5 py-2.5 text-center text-sm font-semibold text-primary-foreground"

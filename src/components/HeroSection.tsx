@@ -6,11 +6,12 @@ import { useGPUDetection } from "@/contexts/GPUContext";
 import GPUDetectionBanner from "@/components/earn/GPUDetectionBanner";
 import GPUManualSelector from "@/components/earn/GPUManualSelector";
 import { useIsMobile } from "@/hooks/use-mobile";
+import DualPrice from "@/components/DualPrice";
 
 const stats = [
   { value: "12", label: "Providers" },
   { value: "48", label: "GPUs" },
-  { value: "$0.35/hr", label: "Avg Cost" },
+  { value: "$0.35/hr", label: "Avg Cost", usd: 0.35 },
   { value: "99.9%", label: "Uptime" },
 ];
 
@@ -74,7 +75,9 @@ const HeroSection = () => {
                 <div className="rounded-xl border border-green-500/30 bg-green-500/10 px-6 py-4">
                   <p className="text-sm text-green-400">
                     We detected your <span className="font-bold text-white">{gpuDisplayName}</span> — you could earn{" "}
-                    <span className="font-bold text-green-300">${Math.round(earnings.monthlyEarning)}/mo</span>
+                    <span className="font-bold text-green-300">
+                      <DualPrice usd={earnings.monthlyEarning} period="/mo" primaryClassName="text-green-300 font-bold" secondaryClassName="text-green-300/60" />
+                    </span>
                   </p>
                   <div className="flex flex-wrap items-center gap-3 mt-3">
                     <a
@@ -158,7 +161,9 @@ const HeroSection = () => {
                   i === 2 ? "rounded-bl-xl sm:rounded-none" : ""
                 }${i === 3 ? "rounded-br-xl sm:rounded-r-xl sm:rounded-bl-none" : ""}`}
               >
-                <span className="text-2xl font-bold text-primary">{stat.value}</span>
+                <span className="text-2xl font-bold text-primary">
+                  {'usd' in stat ? <DualPrice usd={stat.usd as number} period="/hr" primaryClassName="text-primary font-bold" secondaryClassName="text-muted-foreground text-xs" /> : stat.value}
+                </span>
                 <span className="text-xs font-medium text-muted-foreground">{stat.label}</span>
               </div>
             ))}
