@@ -42,7 +42,7 @@ const Footer = () => {
           {/* Right */}
           <div className="flex items-start gap-4 sm:justify-end">
             <a
-              href="https://x.com"
+              href="https://x.com/DC1sa"
               target="_blank"
               rel="noopener noreferrer"
               className="text-muted-foreground transition-colors hover:text-foreground"
@@ -51,7 +51,7 @@ const Footer = () => {
               <Twitter size={18} />
             </a>
             <a
-              href="https://linkedin.com"
+              href="https://www.linkedin.com/company/dc1sa/"
               target="_blank"
               rel="noopener noreferrer"
               className="text-muted-foreground transition-colors hover:text-foreground"
