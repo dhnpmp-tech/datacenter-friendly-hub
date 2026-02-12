@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { Slider } from "@/components/ui/slider";
 import { useGPUDetection } from "@/contexts/GPUContext";
+import DualPrice from "@/components/DualPrice";
 
 const EarningsCalculatorSection = () => {
   const { isKnown, earnings, comparison, utilization, setUtilization } = useGPUDetection();
@@ -38,15 +39,15 @@ const EarningsCalculatorSection = () => {
 
             <div className="text-center py-5">
               <p className="text-5xl font-extrabold bg-gradient-to-br from-green-400 to-green-500 bg-clip-text text-transparent leading-tight">
-                ${Math.round(earnings.monthlyEarning)}
+                <DualPrice usd={earnings.monthlyEarning} period="/mo" primaryClassName="bg-gradient-to-br from-green-400 to-green-500 bg-clip-text text-transparent" secondaryClassName="text-muted-foreground" />
               </p>
               <p className="text-sm text-muted-foreground mt-1">estimated monthly earnings</p>
             </div>
 
             <div className="grid grid-cols-3 gap-3">
-              <StatBox label="Market Rate/hr" value={`$${earnings.marketPrice.toFixed(2)}`} />
-              <StatBox label="Your Cut (85%)" value={`$${earnings.yourCut.toFixed(3)}`} />
-              <StatBox label="Power Cost/hr" value={`-$${earnings.hourlyPowerCost.toFixed(3)}`} />
+              <StatBox label="Market Rate/hr" usd={earnings.marketPrice} period="/hr" />
+              <StatBox label="Your Cut (85%)" usd={earnings.yourCut} period="/hr" />
+              <StatBox label="Power Cost/hr" usd={-earnings.hourlyPowerCost} period="/hr" negative />
             </div>
           </div>
 
@@ -73,7 +74,7 @@ const EarningsCalculatorSection = () => {
 
             <div className="mt-4 text-center rounded-lg bg-green-500/10 p-3">
               <span className="text-sm font-semibold text-green-400">
-                DC1 earns you ${Math.round(comparison.dc1.net - comparison.us.net)}/mo more than US-based hosting
+                DC1 earns you <DualPrice usd={comparison.dc1.net - comparison.us.net} period="/mo" primaryClassName="text-green-400 font-bold" secondaryClassName="text-green-400/60" /> more than US-based hosting
               </span>
             </div>
           </div>
@@ -93,10 +94,17 @@ const EarningsCalculatorSection = () => {
   );
 };
 
-function StatBox({ label, value }: { label: string; value: string }) {
+function StatBox({ label, usd, period, negative }: { label: string; usd: number; period: string; negative?: boolean }) {
   return (
     <div className="rounded-lg bg-muted p-3.5 text-center">
-      <p className="text-lg font-bold text-white">{value}</p>
+      <p className="text-base font-bold text-foreground">
+        <DualPrice
+          usd={Math.abs(usd)}
+          period={period}
+          primaryClassName={negative ? "text-destructive/70" : "text-foreground"}
+          secondaryClassName="text-muted-foreground"
+        />
+      </p>
       <p className="text-[11px] text-muted-foreground mt-1">{label}</p>
     </div>
   );
@@ -112,8 +120,12 @@ function CompRow({ platform, tag, net, power, highlight, noBorder }: {
         {tag && <span className="ml-2 inline-block bg-green-500/20 text-green-400 px-2 py-0.5 rounded-full text-[11px] font-semibold">{tag}</span>}
       </div>
       <div className="text-right">
-        <p className={`font-semibold ${highlight ? "text-green-400" : ""}`}>${Math.round(net)}/mo</p>
-        <p className="text-xs text-muted-foreground">Power: ${Math.round(power)}/mo</p>
+        <p className={`font-semibold ${highlight ? "text-green-400" : ""}`}>
+          <DualPrice usd={net} period="/mo" primaryClassName={highlight ? "text-green-400" : "text-foreground"} secondaryClassName="text-muted-foreground" />
+        </p>
+        <p className="text-xs text-muted-foreground">
+          Power: <DualPrice usd={power} period="/mo" primaryClassName="text-muted-foreground" secondaryClassName="text-muted-foreground/60" />
+        </p>
       </div>
     </div>
   );

@@ -11,7 +11,7 @@ import DualPrice from "@/components/DualPrice";
 const stats = [
   { value: "12", label: "Providers" },
   { value: "48", label: "GPUs" },
-  { value: "$0.35/hr", label: "Avg Cost" },
+  { value: "$0.35/hr", label: "Avg Cost", usd: 0.35 },
   { value: "99.9%", label: "Uptime" },
 ];
 
