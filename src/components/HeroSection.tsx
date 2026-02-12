@@ -75,7 +75,9 @@ const HeroSection = () => {
                 <div className="rounded-xl border border-green-500/30 bg-green-500/10 px-6 py-4">
                   <p className="text-sm text-green-400">
                     We detected your <span className="font-bold text-white">{gpuDisplayName}</span> — you could earn{" "}
-                    <span className="font-bold text-green-300">${Math.round(earnings.monthlyEarning)}/mo</span>
+                    <span className="font-bold text-green-300">
+                      <DualPrice usd={earnings.monthlyEarning} period="/mo" primaryClassName="text-green-300 font-bold" secondaryClassName="text-green-300/60" />
+                    </span>
                   </p>
                   <div className="flex flex-wrap items-center gap-3 mt-3">
                     <a
