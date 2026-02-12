@@ -1,11 +1,13 @@
 import { motion } from "framer-motion";
 import { Zap, ShieldCheck, Cpu, Layers, DollarSign, Globe } from "lucide-react";
+import DualPrice from "@/components/DualPrice";
 
 const cards = [
   {
     Icon: Zap,
     title: "Competitive Energy",
     text: "Saudi energy rates from $0.048/kWh. Your compute costs drop before we even optimize.",
+    hasPrice: true,
   },
   {
     Icon: ShieldCheck,
