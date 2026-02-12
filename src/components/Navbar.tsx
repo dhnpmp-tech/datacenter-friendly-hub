@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Menu, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import dc1Logo from "@/assets/dc1-logo.webp";
+import CurrencySwitcher from "@/components/CurrencySwitcher";
 
 const navLinks = [
   { label: "How It Works", href: "#how-it-works" },
