@@ -63,15 +63,46 @@ const Footer = () => {
         </div>
 
         <div className="mt-10 border-t border-border pt-6 text-center space-y-2">
-          <p className="text-sm text-muted-foreground">
-            &copy; 2026 HAAK Energy Solutions Company. All rights reserved.
+          <p className="text-xs text-muted-foreground/70">
+            DC Power Solutions Company | CR 7053667775
           </p>
+          <p className="text-sm text-muted-foreground">
+            &copy; 2026 DC1 — Saudi Arabia's Compute Marketplace
+          </p>
+          <div className="flex items-center justify-center gap-4 pt-1">
+            <a
+              href="https://x.com/DC1sa"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-muted-foreground/60 transition-colors hover:text-foreground"
+              aria-label="X"
+            >
+              <Twitter size={16} />
+            </a>
+            <a
+              href="https://www.linkedin.com/company/dc1sa/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-muted-foreground/60 transition-colors hover:text-foreground"
+              aria-label="LinkedIn"
+            >
+              <Linkedin size={16} />
+            </a>
+            <a
+              href="https://dc1st.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-xs text-muted-foreground/60 transition-colors hover:text-foreground"
+            >
+              dc1st.com
+            </a>
+          </div>
           <button
             onClick={() => {
               localStorage.removeItem("dc1-cookie-consent");
               window.location.reload();
             }}
-            className="text-xs text-muted-foreground underline-offset-4 hover:underline hover:text-foreground transition-colors"
+            className="text-xs text-muted-foreground/50 underline-offset-4 hover:underline hover:text-foreground transition-colors"
           >
             Cookie Settings
           </button>
