@@ -6,6 +6,7 @@ import {
   type GPUInfo,
 } from "@/lib/gpu-data";
 import { useCurrency } from "@/contexts/CurrencyContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface EarningsReportProps {
   gpuName: string;
@@ -51,6 +52,7 @@ function useAnimatedNumber(target: number, duration = 300) {
 
 const EarningsReport = ({ gpuName, gpuCount = 1, onCountryDetected }: EarningsReportProps) => {
   const { dual } = useCurrency();
+  const { t } = useLanguage();
   const [countryCode, setCountryCode] = useState<string | null>(null);
   const [countryLabel, setCountryLabel] = useState("Detecting...");
   const [userEnergyRate, setUserEnergyRate] = useState<number>(DEFAULT_ENERGY_RATE);
@@ -96,27 +98,22 @@ const EarningsReport = ({ gpuName, gpuCount = 1, onCountryDetected }: EarningsRe
   const tdpKw = gpu.tdp / 1000;
   const systemKw = tdpKw * OVERHEAD;
 
-  // Revenue
   const grossMonthly = rate * util * MONTHLY_HOURS;
   const revenueForProvider = grossMonthly * 0.85;
   const revenueHourly = rate * util * 0.85;
 
-  // Power costs
   const powerHourlyUser = systemKw * userEnergyRate;
   const powerMonthlyUser = systemKw * MONTHLY_HOURS * userEnergyRate;
   const powerHourlyDC1 = systemKw * DC1_ENERGY;
   const powerMonthlyDC1 = systemKw * MONTHLY_HOURS * DC1_ENERGY;
 
-  // DC1 fee
   const dc1Fee = grossMonthly * DC1_FEE_PCT;
 
-  // Net
   const netUser = revenueForProvider - powerMonthlyUser;
   const netDC1 = revenueForProvider - powerMonthlyDC1 - dc1Fee;
   const annualUser = netUser * 12;
   const annualDC1 = netDC1 * 12;
 
-  // Condition logic
   const pctDiff = netUser !== 0 ? ((netDC1 - netUser) / Math.abs(netUser)) * 100 : 0;
   const bothNegative = netUser < 0 && netDC1 < 0;
   const userNegDC1Pos = netUser < 0 && netDC1 > 0;
@@ -144,7 +141,6 @@ const EarningsReport = ({ gpuName, gpuCount = 1, onCountryDetected }: EarningsRe
     setIsCustomRate(false);
   };
 
-  // Animated values
   const animRevHourly = useAnimatedNumber(revenueHourly * gpuCount);
   const animRevMonthly = useAnimatedNumber(revenueForProvider * gpuCount);
   const animPwrHourly = useAnimatedNumber(powerHourlyUser * gpuCount);
@@ -166,15 +162,14 @@ const EarningsReport = ({ gpuName, gpuCount = 1, onCountryDetected }: EarningsRe
       {/* Card Header */}
       <div className="border-b border-border/50 px-6 py-3">
         <p className="text-[11px] uppercase tracking-[2px] text-muted-foreground font-medium">
-          GPU Economics
+          {t("report.gpu_economics")}
         </p>
       </div>
 
       {/* SECTION 1 — Revenue & Power Cost */}
       <div className="grid grid-cols-1 sm:grid-cols-2 border-b border-border/50">
-        {/* Revenue */}
-        <div className="p-6 border-b sm:border-b-0 sm:border-r border-border/50">
-          <p className="text-[10px] uppercase tracking-widest text-muted-foreground mb-3">Revenue</p>
+        <div className="p-6 border-b sm:border-b-0 sm:border-e border-border/50">
+          <p className="text-[10px] uppercase tracking-widest text-muted-foreground mb-3">{t("report.revenue")}</p>
           <div className="flex items-baseline gap-2">
             <span className="text-2xl font-bold text-foreground" style={{ fontVariantNumeric: "tabular-nums" }}>
               {revHrDual.primary}
@@ -188,7 +183,7 @@ const EarningsReport = ({ gpuName, gpuCount = 1, onCountryDetected }: EarningsRe
             <span className="text-xs text-muted-foreground">{revMoDual.secondary}</span>
           </div>
           <p className="text-xs text-muted-foreground mt-2">
-            Market rate at {Math.round(util * 100)}% utilization
+            {t("report.market_rate_at")} {Math.round(util * 100)}% {t("report.utilization")}
           </p>
           <p className="text-[11px] text-muted-foreground/60 mt-0.5">
             {gpu.tdp}W x 730hrs x {Math.round(util * 100)}% x ${rate.toFixed(2)}
@@ -198,9 +193,8 @@ const EarningsReport = ({ gpuName, gpuCount = 1, onCountryDetected }: EarningsRe
           )}
         </div>
 
-        {/* Power Cost */}
         <div className="p-6">
-          <p className="text-[10px] uppercase tracking-widest text-muted-foreground mb-3">Power Cost</p>
+          <p className="text-[10px] uppercase tracking-widest text-muted-foreground mb-3">{t("report.power_cost")}</p>
           <div className="flex items-baseline gap-2">
             <span className="text-2xl font-bold" style={{ color: "hsl(0 84% 60% / 0.7)", fontVariantNumeric: "tabular-nums" }}>
               {pwrHrDual.primary}
@@ -214,8 +208,8 @@ const EarningsReport = ({ gpuName, gpuCount = 1, onCountryDetected }: EarningsRe
             <span className="text-xs text-muted-foreground">{pwrMoDual.secondary}</span>
           </div>
           <p className="text-xs text-muted-foreground mt-2">
-            Based on {flag} {countryLabel}: ${userEnergyRate.toFixed(3)}/kWh
-            {isCustomRate && <span className="text-muted-foreground/50"> (custom)</span>}
+            {t("report.based_on")} {flag} {countryLabel}: ${userEnergyRate.toFixed(3)}/kWh
+            {isCustomRate && <span className="text-muted-foreground/50"> {t("report.custom")}</span>}
           </p>
           <div className="flex items-center gap-3 mt-1.5">
             {!editing && (
@@ -223,7 +217,7 @@ const EarningsReport = ({ gpuName, gpuCount = 1, onCountryDetected }: EarningsRe
                 onClick={() => { setEditing(true); setEditValue(userEnergyRate.toString()); }}
                 className="text-[11px] text-secondary hover:underline inline-flex items-center gap-0.5"
               >
-                <Pencil className="h-2.5 w-2.5" /> Edit your rate
+                <Pencil className="h-2.5 w-2.5" /> {t("report.edit_rate")}
               </button>
             )}
             {isCustomRate && !editing && (
@@ -231,7 +225,7 @@ const EarningsReport = ({ gpuName, gpuCount = 1, onCountryDetected }: EarningsRe
                 onClick={handleReset}
                 className="text-[11px] text-muted-foreground hover:underline inline-flex items-center gap-0.5"
               >
-                <RotateCcw className="h-2.5 w-2.5" /> Reset
+                <RotateCcw className="h-2.5 w-2.5" /> {t("report.reset")}
               </button>
             )}
           </div>
@@ -249,8 +243,8 @@ const EarningsReport = ({ gpuName, gpuCount = 1, onCountryDetected }: EarningsRe
                 onKeyDown={(e) => e.key === "Enter" && handleEditSave()}
               />
               <span className="text-[11px] text-muted-foreground">$/kWh</span>
-              <button onClick={handleEditSave} className="text-[11px] font-medium text-secondary hover:underline">Save</button>
-              <button onClick={() => setEditing(false)} className="text-[11px] text-muted-foreground hover:underline">Cancel</button>
+              <button onClick={handleEditSave} className="text-[11px] font-medium text-secondary hover:underline">{t("report.save")}</button>
+              <button onClick={() => setEditing(false)} className="text-[11px] text-muted-foreground hover:underline">{t("report.cancel")}</button>
             </div>
           )}
         </div>
@@ -259,10 +253,9 @@ const EarningsReport = ({ gpuName, gpuCount = 1, onCountryDetected }: EarningsRe
       {/* SECTION 2 — Net Profit Comparison */}
       <div className="border-b border-border/50 px-6 py-5">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-0">
-          {/* User location column */}
-          <div className="pr-0 sm:pr-5 sm:border-r border-border/30 pb-4 sm:pb-0">
+          <div className="pe-0 sm:pe-5 sm:border-e border-border/30 pb-4 sm:pb-0">
             <p className="text-[10px] uppercase tracking-widest text-muted-foreground mb-3">
-              Running from {flag} {countryLabel}
+              {t("report.running_from")} {flag} {countryLabel}
             </p>
             <ComparisonLines
               revenue={revenueForProvider * gpuCount}
@@ -271,13 +264,13 @@ const EarningsReport = ({ gpuName, gpuCount = 1, onCountryDetected }: EarningsRe
               net={netUser * gpuCount}
               annual={annualUser * gpuCount}
               dual={dual}
+              t={t}
             />
           </div>
 
-          {/* DC1 column */}
-          <div className="pl-0 sm:pl-5 pt-4 sm:pt-0 border-t sm:border-t-0 border-border/30">
+          <div className="ps-0 sm:ps-5 pt-4 sm:pt-0 border-t sm:border-t-0 border-border/30">
             <p className="text-[10px] uppercase tracking-widest text-muted-foreground mb-3">
-              Running on DC1 {COUNTRY_FLAGS.SA} Saudi Arabia
+              {t("report.running_on_dc1")} {COUNTRY_FLAGS.SA} {t("report.saudi_arabia")}
             </p>
             <ComparisonLines
               revenue={revenueForProvider * gpuCount}
@@ -286,6 +279,7 @@ const EarningsReport = ({ gpuName, gpuCount = 1, onCountryDetected }: EarningsRe
               net={netDC1 * gpuCount}
               annual={annualDC1 * gpuCount}
               dual={dual}
+              t={t}
             />
           </div>
         </div>
@@ -295,35 +289,35 @@ const EarningsReport = ({ gpuName, gpuCount = 1, onCountryDetected }: EarningsRe
           {bothNegative && (
             <div className="rounded-lg border border-yellow-500/20 bg-yellow-500/5 px-4 py-3">
               <p className="text-sm text-yellow-400/90">
-                At current market rates, this GPU may not generate positive returns from compute rental. Consider joining our waitlist — we'll notify you when demand for {gpuName} increases.
+                {t("report.negative_returns")}
               </p>
             </div>
           )}
           {userNegDC1Pos && (
             <div className="rounded-lg border border-green-500/20 bg-green-500/5 px-4 py-3">
               <p className="text-sm" style={{ color: "hsl(var(--success))" }}>
-                This GPU loses money at {countryLabel} energy rates. On DC1's Saudi energy, it becomes profitable.
+                {t("report.user_neg_dc1_pos")}
               </p>
             </div>
           )}
           {dc1Better10 && (
             <div className="rounded-lg border border-green-500/20 bg-green-500/5 px-4 py-3">
               <p className="text-sm font-medium" style={{ color: "hsl(var(--success))" }}>
-                DC1 Advantage: +{fmtDualAbs(Math.abs(netDC1 - netUser) * gpuCount, "/mo").primary} (+{Math.round(Math.abs(pctDiff))}%) — lower energy costs offset the platform fee
+                DC1 Advantage: +{fmtDualAbs(Math.abs(netDC1 - netUser) * gpuCount, "/mo").primary} (+{Math.round(Math.abs(pctDiff))}%)
               </p>
             </div>
           )}
           {withinRange && (
             <div className="rounded-lg border border-border/30 bg-muted/30 px-4 py-3">
               <p className="text-sm text-muted-foreground">
-                Similar returns — but DC1 includes managed billing, security, compliance, and demand matching. No ops team needed.
+                {t("report.similar_returns")}
               </p>
             </div>
           )}
           {dc1Worse && (
             <div className="rounded-lg border border-border/30 bg-muted/30 px-4 py-3">
               <p className="text-sm text-muted-foreground">
-                DC1 costs {fmtDualAbs(Math.abs(netUser - netDC1) * gpuCount, "/mo").primary} — replacing your billing, security, compliance, networking, and customer support. No staff needed.
+                DC1 costs {fmtDualAbs(Math.abs(netUser - netDC1) * gpuCount, "/mo").primary} — {t("report.fee_replaces")}
               </p>
             </div>
           )}
@@ -334,17 +328,17 @@ const EarningsReport = ({ gpuName, gpuCount = 1, onCountryDetected }: EarningsRe
       {showPlatformValue && (
         <div className="border-b border-border/50 px-6 py-5">
           <p className="text-[10px] uppercase tracking-widest text-muted-foreground mb-4">
-            What the 15% platform fee includes
+            {t("report.platform_fee_includes")}
           </p>
           <div className="space-y-2.5">
-            <ValueItem icon={Zap} text="Managed billing — we find renters, you get paid automatically" />
-            <ValueItem icon={Shield} text="3-agent security model — Guardian, Watcher, Auditor protect your hardware" />
-            <ValueItem icon={CheckCircle} text="SDAIA compliance — we handle Saudi regulatory requirements" />
-            <ValueItem icon={Lock} text="Guaranteed rate — when rented, your rate is locked in" />
-            <ValueItem icon={Server} text="Zero infrastructure — no networking, hosting, or support tickets to manage" />
+            <ValueItem icon={Zap} text={t("report.managed_billing")} />
+            <ValueItem icon={Shield} text={t("report.security_model")} />
+            <ValueItem icon={CheckCircle} text={t("report.sdaia_compliance")} />
+            <ValueItem icon={Lock} text={t("report.guaranteed_rate")} />
+            <ValueItem icon={Server} text={t("report.zero_infra")} />
           </div>
           <p className="text-[11px] text-muted-foreground/50 mt-4">
-            DC1's 15% fee replaces your ops team.
+            {t("report.fee_replaces")}
           </p>
         </div>
       )}
@@ -361,9 +355,10 @@ const EarningsReport = ({ gpuName, gpuCount = 1, onCountryDetected }: EarningsRe
   );
 };
 
-function ComparisonLines({ revenue, power, dc1Fee, net, annual, dual }: {
+function ComparisonLines({ revenue, power, dc1Fee, net, annual, dual, t }: {
   revenue: number; power: number; dc1Fee: number | null; net: number; annual: number;
   dual: (usd: number, period?: string) => { primary: string; secondary: string };
+  t: (key: string) => string;
 }) {
   const netColor = net >= 0 ? "hsl(142 71% 45%)" : "hsl(0 84% 60%)";
 
@@ -375,30 +370,30 @@ function ComparisonLines({ revenue, power, dc1Fee, net, annual, dual }: {
 
   return (
     <div className="space-y-1.5" style={{ fontVariantNumeric: "tabular-nums" }}>
-      <LineItem label="Revenue" value={revDual.primary} secondary={revDual.secondary} className="text-foreground" />
-      <LineItem label="Power" value={`-${pwrDual.primary}`} secondary={pwrDual.secondary} className="text-destructive/70" />
+      <LineItem label={t("report.revenue")} value={revDual.primary} secondary={revDual.secondary} className="text-foreground" />
+      <LineItem label={t("report.power")} value={`-${pwrDual.primary}`} secondary={pwrDual.secondary} className="text-destructive/70" />
       {feeDual ? (
-        <LineItem label="DC1 fee (15%)" value={`-${feeDual.primary}`} secondary={feeDual.secondary} className="text-destructive/70" />
+        <LineItem label={t("report.dc1_fee_15")} value={`-${feeDual.primary}`} secondary={feeDual.secondary} className="text-destructive/70" />
       ) : (
-        <LineItem label="DC1 fee" value="—" className="text-muted-foreground/40" />
+        <LineItem label={t("report.dc1_fee")} value="—" className="text-muted-foreground/40" />
       )}
       <div className="border-t border-border/30 my-2" />
       <div className="flex justify-between items-baseline">
-        <span className="text-sm font-semibold" style={{ color: netColor }}>Net</span>
-        <div className="text-right">
+        <span className="text-sm font-semibold" style={{ color: netColor }}>{t("report.net")}</span>
+        <div className="text-end">
           <span className="text-lg font-bold" style={{ color: netColor }}>
             {net < 0 ? "-" : ""}{netDual.primary}
           </span>
-          <span className="text-xs text-muted-foreground ml-1.5">{netDual.secondary}</span>
+          <span className="text-xs text-muted-foreground ms-1.5">{netDual.secondary}</span>
         </div>
       </div>
       <div className="flex justify-between items-baseline">
-        <span className="text-xs" style={{ color: netColor }}>Annual</span>
-        <div className="text-right">
+        <span className="text-xs" style={{ color: netColor }}>{t("report.annual")}</span>
+        <div className="text-end">
           <span className="text-sm font-semibold" style={{ color: netColor }}>
             {annual < 0 ? "-" : ""}{annDual.primary}
           </span>
-          <span className="text-xs text-muted-foreground ml-1.5">{annDual.secondary}</span>
+          <span className="text-xs text-muted-foreground ms-1.5">{annDual.secondary}</span>
         </div>
       </div>
     </div>
@@ -409,9 +404,9 @@ function LineItem({ label, value, secondary, className }: { label: string; value
   return (
     <div className="flex justify-between items-baseline">
       <span className="text-xs text-muted-foreground">{label}</span>
-      <div className="text-right">
+      <div className="text-end">
         <span className={`text-sm ${className || ""}`}>{value}</span>
-        {secondary && <span className="text-xs text-muted-foreground ml-1.5">{secondary}</span>}
+        {secondary && <span className="text-xs text-muted-foreground ms-1.5">{secondary}</span>}
       </div>
     </div>
   );

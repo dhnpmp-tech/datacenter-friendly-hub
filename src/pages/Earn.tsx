@@ -21,11 +21,11 @@ import {
   type GPUInfo,
 } from "@/lib/gpu-data";
 
-const tierBadge: Record<string, { label: string; className: string }> = {
-  high: { label: "High Demand", className: "bg-success/20 text-green-400 border border-green-500" },
-  mid: { label: "Good Earner", className: "bg-yellow-500/15 text-yellow-400 border border-yellow-500" },
-  low: { label: "Marketplace Ready", className: "bg-red-500/15 text-red-400 border border-red-500" },
-};
+const getTierBadge = (t: (key: string) => string): Record<string, { label: string; className: string }> => ({
+  high: { label: t("tier.high"), className: "bg-success/20 text-green-400 border border-green-500" },
+  mid: { label: t("tier.mid"), className: "bg-yellow-500/15 text-yellow-400 border border-yellow-500" },
+  low: { label: t("tier.low"), className: "bg-red-500/15 text-red-400 border border-red-500" },
+});
 
 const Earn = () => {
   const { toast } = useToast();
@@ -278,13 +278,13 @@ const Earn = () => {
                     </p>
                   </div>
 
-                  <span className={`mt-3 inline-block rounded-full px-3 py-1 text-xs font-semibold ${tierBadge[gpuInfo.tier].className}`}>
-                    {tierBadge[gpuInfo.tier].label}
+                  <span className={`mt-3 inline-block rounded-full px-3 py-1 text-xs font-semibold ${getTierBadge(t)[gpuInfo.tier].className}`}>
+                    {getTierBadge(t)[gpuInfo.tier].label}
                   </span>
 
                   <div className="mt-4 grid grid-cols-2 gap-3">
-                    <SpecItem label="GPU Cores" value={gpuInfo.cores} />
-                    <SpecItem label="Platform" value={navigator.platform || "Unknown"} />
+                    <SpecItem label={t("earn.gpu_cores")} value={gpuInfo.cores} />
+                    <SpecItem label={t("earn.platform")} value={navigator.platform || "Unknown"} />
                   </div>
                 </>
               )}
@@ -426,7 +426,7 @@ const Earn = () => {
         {/* Footer */}
         <footer className="text-center py-8 space-y-2">
           <p className="text-xs text-muted-foreground">
-            <span className="inline-block w-2 h-2 rounded-full bg-green-500 mr-1.5 animate-pulse align-middle" />
+            <span className="inline-block w-2 h-2 rounded-full bg-green-500 me-1.5 animate-pulse align-middle" />
             {t("earn.market_data")}
           </p>
           <p className="text-[11px] text-muted-foreground/60">

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Copy, Check, Chrome, Globe, Compass, Monitor, Bookmark } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 type Browser = "chrome" | "firefox" | "safari" | "other";
 
@@ -22,6 +23,7 @@ export default function GPUFixItGuide({ open, onClose }: GPUFixItGuideProps) {
   const isMobile = useIsMobile();
   const browser = detectBrowser();
   const [copiedUrl, setCopiedUrl] = useState<string | null>(null);
+  const { t, isRTL } = useLanguage();
 
   const copyText = async (text: string, id: string) => {
     await navigator.clipboard.writeText(text);
@@ -69,11 +71,10 @@ export default function GPUFixItGuide({ open, onClose }: GPUFixItGuideProps) {
 
   const content = (
     <div className="flex flex-col h-full">
-      {/* Header */}
       <div className="flex items-center justify-between px-6 py-4 border-b border-border">
         <div className="flex items-center gap-2">
           <Monitor className="h-5 w-5 text-primary" />
-          <h2 className="text-lg font-bold text-foreground">Fix GPU Detection</h2>
+          <h2 className="text-lg font-bold text-foreground">{t("fix.title")}</h2>
         </div>
         <button onClick={onClose} className="rounded-lg p-1.5 hover:bg-muted transition-colors">
           <X className="h-5 w-5 text-muted-foreground" />
@@ -81,11 +82,10 @@ export default function GPUFixItGuide({ open, onClose }: GPUFixItGuideProps) {
       </div>
 
       <div className="flex-1 overflow-y-auto px-6 py-5 space-y-6">
-        {/* Step 1 */}
         <div>
           <div className="flex items-center gap-2 mb-4">
             <span className="flex items-center justify-center h-6 w-6 rounded-full bg-primary/20 text-primary text-xs font-bold">1</span>
-            <h3 className="text-sm font-semibold text-foreground">Enable Hardware Acceleration</h3>
+            <h3 className="text-sm font-semibold text-foreground">{t("fix.step1")}</h3>
           </div>
 
           <div className="space-y-3">
@@ -104,12 +104,12 @@ export default function GPUFixItGuide({ open, onClose }: GPUFixItGuideProps) {
                     {b.icon}
                     <span className="text-sm font-medium text-foreground">{b.label}</span>
                     {isActive && (
-                      <span className="ml-auto text-[10px] uppercase tracking-wider bg-primary/20 text-primary px-2 py-0.5 rounded-full font-semibold">
-                        Your browser
+                      <span className="ms-auto text-[10px] uppercase tracking-wider bg-primary/20 text-primary px-2 py-0.5 rounded-full font-semibold">
+                        {t("fix.your_browser")}
                       </span>
                     )}
                   </div>
-                  <ol className="space-y-1.5 ml-6">
+                  <ol className="space-y-1.5 ms-6">
                     {b.steps.map((step, i) => (
                       <li key={i} className="text-sm text-muted-foreground list-decimal">{step}</li>
                     ))}
@@ -120,7 +120,7 @@ export default function GPUFixItGuide({ open, onClose }: GPUFixItGuideProps) {
                       className="mt-3 inline-flex items-center gap-1.5 rounded-lg border border-border bg-muted px-3 py-1.5 text-xs font-medium text-foreground hover:bg-muted/80 transition-colors"
                     >
                       {copiedUrl === b.key ? <Check className="h-3 w-3 text-green-400" /> : <Copy className="h-3 w-3" />}
-                      {copiedUrl === b.key ? "Copied!" : `Copy ${b.url}`}
+                      {copiedUrl === b.key ? t("fix.copied") : `Copy ${b.url}`}
                     </button>
                   )}
                 </div>
@@ -129,14 +129,13 @@ export default function GPUFixItGuide({ open, onClose }: GPUFixItGuideProps) {
           </div>
         </div>
 
-        {/* Step 2 */}
         <div>
           <div className="flex items-center gap-2 mb-4">
             <span className="flex items-center justify-center h-6 w-6 rounded-full bg-primary/20 text-primary text-xs font-bold">2</span>
-            <h3 className="text-sm font-semibold text-foreground">Restart & Return</h3>
+            <h3 className="text-sm font-semibold text-foreground">{t("fix.step2")}</h3>
           </div>
           <p className="text-sm text-muted-foreground mb-3">
-            Restart your browser, then come back to this page. We'll detect your GPU automatically.
+            {t("fix.step2_desc")}
           </p>
           <div className="flex flex-wrap gap-2">
             <button
@@ -144,24 +143,22 @@ export default function GPUFixItGuide({ open, onClose }: GPUFixItGuideProps) {
               className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-muted px-3 py-2 text-xs font-medium text-foreground hover:bg-muted/80 transition-colors"
             >
               {copiedUrl === "page" ? <Check className="h-3 w-3 text-green-400" /> : <Copy className="h-3 w-3" />}
-              {copiedUrl === "page" ? "Copied!" : "Copy this page link"}
+              {copiedUrl === "page" ? t("fix.copied") : t("fix.copy_link")}
             </button>
           </div>
           <p className="text-xs text-muted-foreground mt-3 flex items-center gap-1.5">
             <Bookmark className="h-3 w-3 text-primary" />
-            Tip: Bookmark this page before restarting
+            {t("fix.bookmark_tip")}
           </p>
         </div>
       </div>
     </div>
   );
 
-  // Mobile: bottom sheet, Desktop: slide-out panel
   return (
     <AnimatePresence>
       {open && (
         <>
-          {/* Backdrop */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -171,7 +168,6 @@ export default function GPUFixItGuide({ open, onClose }: GPUFixItGuideProps) {
           />
 
           {isMobile ? (
-            /* Mobile bottom sheet */
             <motion.div
               initial={{ y: "100%" }}
               animate={{ y: 0 }}
@@ -183,13 +179,12 @@ export default function GPUFixItGuide({ open, onClose }: GPUFixItGuideProps) {
               {content}
             </motion.div>
           ) : (
-            /* Desktop slide-out */
             <motion.div
-              initial={{ x: "100%" }}
+              initial={{ x: isRTL ? "-100%" : "100%" }}
               animate={{ x: 0 }}
-              exit={{ x: "100%" }}
+              exit={{ x: isRTL ? "-100%" : "100%" }}
               transition={{ type: "spring", damping: 30, stiffness: 300 }}
-              className="fixed right-0 top-0 bottom-0 z-50 w-full max-w-md bg-card border-l border-border overflow-hidden"
+              className={`fixed top-0 bottom-0 z-50 w-full max-w-md bg-card border-border overflow-hidden ${isRTL ? "left-0 border-e" : "right-0 border-s"}`}
             >
               {content}
             </motion.div>
