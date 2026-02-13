@@ -10,7 +10,10 @@ import EarningsReport from "@/components/EarningsReport";
 import GPUDetectionBanner from "@/components/earn/GPUDetectionBanner";
 import GPUManualSelector from "@/components/earn/GPUManualSelector";
 import DualPrice from "@/components/DualPrice";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
+import CurrencySwitcher from "@/components/CurrencySwitcher";
 import { getPersistedGPU, persistGPU } from "@/lib/gpu-persist";
+import { useLanguage } from "@/contexts/LanguageContext";
 import {
   GPU_DB, GPU_SELECT_OPTIONS, LOCATION_OPTIONS,
   detectGPU, matchGPU,
@@ -26,6 +29,7 @@ const tierBadge: Record<string, { label: string; className: string }> = {
 
 const Earn = () => {
   const { toast } = useToast();
+  const { t, lang } = useLanguage();
 
   // Detection state
   const [detecting, setDetecting] = useState(true);
@@ -189,14 +193,21 @@ const Earn = () => {
     <div className="min-h-screen bg-[#0a0a0f] text-foreground">
       <div className="mx-auto max-w-[720px] px-4 py-6">
         {/* Header */}
-        <header className="text-center pt-10 pb-6">
+        <header className="flex items-center justify-between pt-6 pb-2">
+          <div />
+          <div className="flex items-center gap-3">
+            <LanguageSwitcher />
+            <CurrencySwitcher />
+          </div>
+        </header>
+        <div className="text-center pb-6">
           <h1 className="text-3xl font-extrabold tracking-tight">
             DC<span className="text-primary">1</span>
           </h1>
           <p className="mt-2 text-sm text-muted-foreground">
-            Turn your idle GPU into income — powered by Saudi Arabia's competitive energy
+            {t("earn.subtitle")}
           </p>
-        </header>
+        </div>
 
         {/* Non-discrete GPU banner */}
         {!detecting && isNonDiscrete && rawRenderer && isKnown && (
@@ -204,11 +215,11 @@ const Earn = () => {
         )}
 
         {/* GPU Detection Card */}
-        <Card title="Your Hardware" icon="🔍">
+        <Card title={t("earn.your_hardware")} icon="🔍">
           {detecting ? (
             <div className="flex items-center gap-3 py-5">
               <Loader2 className="h-5 w-5 animate-spin text-primary" />
-              <span className="text-muted-foreground">Detecting your GPU...</span>
+              <span className="text-muted-foreground">{t("earn.detecting")}</span>
             </div>
           ) : detectedGPU && detectedGPU !== "other" && isKnown ? (
             <div>
@@ -230,7 +241,7 @@ const Earn = () => {
               {/* Auto-matched badge */}
               {autoMatched && (
                 <p className="text-xs text-green-400/80 mt-1.5 flex items-center gap-1">
-                  <CheckCircle2 className="h-3 w-3" /> Auto-matched from detection
+                  <CheckCircle2 className="h-3 w-3" /> {t("earn.auto_matched")}
                 </p>
               )}
 
@@ -241,7 +252,7 @@ const Earn = () => {
                   className="mt-2 text-[11px] text-muted-foreground/60 hover:text-muted-foreground transition-colors inline-flex items-center gap-1"
                 >
                   <ChevronDown className={`h-3 w-3 transition-transform ${showRawDetails ? "rotate-180" : ""}`} />
-                  {showRawDetails ? "Hide" : "Show"} raw details
+                  {showRawDetails ? t("earn.hide_raw") : t("earn.show_raw")}
                 </button>
               )}
               {showRawDetails && rawRenderer && (
@@ -255,7 +266,7 @@ const Earn = () => {
                 <>
                   <div className="mt-4 rounded-lg bg-green-500/10 border border-green-500/20 px-4 py-3">
                     <p className="text-sm text-green-400">
-                      Estimated earnings:{" "}
+                      {t("earn.estimated_earnings")}{" "}
                       <span className="font-bold">
                         <DualPrice
                           usd={gpuInfo.rate * gpuInfo.utilization * 0.85}
@@ -283,7 +294,7 @@ const Earn = () => {
                 onClick={scrollToManual}
                 className="mt-4 text-xs text-secondary hover:underline"
               >
-                Not your GPU? Select manually →
+                {t("earn.not_your_gpu")}
               </button>
             </div>
           ) : (
@@ -305,7 +316,7 @@ const Earn = () => {
           {(showManual || (!isKnown && !detecting)) && (
             <div className="mt-4" ref={manualRef}>
               <p className="text-sm font-medium text-foreground mb-3">
-                Select your GPU to see your earnings estimate
+                {t("earn.select_gpu")}
               </p>
               <GPUManualSelector
                 currentGPU={selectedDropdown}
@@ -318,7 +329,7 @@ const Earn = () => {
           {/* Tip for accurate detection */}
           <p className="mt-4 text-xs text-muted-foreground flex items-start gap-1.5">
             <Info className="h-3 w-3 text-primary mt-0.5 shrink-0" />
-            For accurate detection, use Chrome or Edge with hardware acceleration enabled
+            {t("earn.detection_tip")}
           </p>
         </Card>
 
@@ -338,29 +349,29 @@ const Earn = () => {
         {isKnown && (
           <div className="flex items-center gap-4 my-2 px-2">
             <div className="flex-1 h-px bg-border" />
-            <span className="text-xs text-muted-foreground whitespace-nowrap">Like what you see?</span>
+            <span className="text-xs text-muted-foreground whitespace-nowrap">{t("earn.like_what_you_see")}</span>
             <div className="flex-1 h-px bg-border" />
           </div>
         )}
 
         {/* Signup Form */}
         {(detectedGPU || showManual) && (
-          <Card title="Start Earning — Join the Waitlist" icon="🚀">
+          <Card title={t("earn.join_waitlist")} icon="🚀">
             {!submitted ? (
               <form onSubmit={handleSubmit} className="space-y-4 mt-2">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-xs text-muted-foreground mb-1.5">Name</label>
-                    <Input value={formName} onChange={e => setFormName(e.target.value)} placeholder="Your name" required />
+                    <label className="block text-xs text-muted-foreground mb-1.5">{t("earn.name")}</label>
+                    <Input value={formName} onChange={e => setFormName(e.target.value)} placeholder={t("placeholder.your_name")} required />
                   </div>
                   <div>
-                    <label className="block text-xs text-muted-foreground mb-1.5">Email</label>
-                    <Input type="email" value={formEmail} onChange={e => setFormEmail(e.target.value)} placeholder="you@email.com" required />
+                    <label className="block text-xs text-muted-foreground mb-1.5">{t("earn.email")}</label>
+                    <Input type="email" value={formEmail} onChange={e => setFormEmail(e.target.value)} placeholder={t("placeholder.email")} required />
                   </div>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-xs text-muted-foreground mb-1.5">Location</label>
+                    <label className="block text-xs text-muted-foreground mb-1.5">{t("earn.location")}</label>
                     <select
                       className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
                       value={formLocation}
@@ -372,12 +383,12 @@ const Earn = () => {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-xs text-muted-foreground mb-1.5">Detected GPU</label>
+                    <label className="block text-xs text-muted-foreground mb-1.5">{t("earn.detected_gpu")}</label>
                     <Input value={isKnown ? (cleanGPUName || `NVIDIA ${detectedGPU}`) : (gpuDisplayName || "Other")} readOnly />
                   </div>
                 </div>
                 <div>
-                  <label className="block text-xs text-muted-foreground mb-1.5">How many GPUs do you have?</label>
+                  <label className="block text-xs text-muted-foreground mb-1.5">{t("earn.gpu_count")}</label>
                   <select
                     className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
                     value={formGpuCount}
@@ -395,18 +406,18 @@ const Earn = () => {
                     disabled={submitting}
                     className="w-full max-w-[400px] py-6 text-base font-bold bg-gradient-to-r from-primary to-amber-400 hover:brightness-110 transition-all"
                   >
-                    {submitting ? "Submitting..." : "Join Provider Waitlist →"}
+                    {submitting ? t("waitlist.submitting") : t("earn.join_provider")}
                   </Button>
                   <p className="text-xs text-muted-foreground mt-3">
-                    Free to join. No commitment. We'll notify you when DC1 launches.
+                    {t("earn.free_to_join")}
                   </p>
                 </div>
               </form>
             ) : (
               <div className="text-center py-8">
                 <p className="text-5xl">🎉</p>
-                <p className="text-xl font-bold mt-3">You're on the list!</p>
-                <p className="text-muted-foreground mt-2">We'll email you when DC1 launches in your region.</p>
+                <p className="text-xl font-bold mt-3">{t("earn.on_the_list")}</p>
+                <p className="text-muted-foreground mt-2">{t("earn.will_email")}</p>
               </div>
             )}
           </Card>
@@ -416,13 +427,13 @@ const Earn = () => {
         <footer className="text-center py-8 space-y-2">
           <p className="text-xs text-muted-foreground">
             <span className="inline-block w-2 h-2 rounded-full bg-green-500 mr-1.5 animate-pulse align-middle" />
-            Market data from vast.ai — updated live
+            {t("earn.market_data")}
           </p>
           <p className="text-[11px] text-muted-foreground/60">
-            DC Power Solutions Company | CR 7053667775
+            {t("footer.legal")}
           </p>
           <p className="text-xs text-muted-foreground">
-            © 2026 DC1 — Saudi Arabia's Compute Marketplace
+            {t("footer.copyright")}
           </p>
           <div className="flex items-center justify-center gap-4 pt-1">
             <a href="https://x.com/DC1sa" target="_blank" rel="noopener noreferrer" className="text-muted-foreground/50 hover:text-foreground transition-colors" aria-label="X">

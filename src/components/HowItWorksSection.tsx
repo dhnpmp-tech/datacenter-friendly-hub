@@ -1,42 +1,33 @@
 import { motion } from "framer-motion";
 import { Server, Zap, Terminal } from "lucide-react";
-
-const columns = [
-  {
-    title: "For Providers",
-    Icon: Server,
-    steps: [
-      "Connect your hardware — GPU, CPU, or storage",
-      "Set your availability and preferences",
-      "Earn competitive returns. We handle billing, security, and compliance.",
-    ],
-  },
-  {
-    title: "The Platform",
-    Icon: Zap,
-    steps: [
-      "DC1 matches supply with demand automatically",
-      "Market maker pricing — fair rates guaranteed both sides",
-      "3-layer security: Guardian, Watcher, and Auditor protect every transaction",
-    ],
-  },
-  {
-    title: "For Renters",
-    Icon: Terminal,
-    steps: [
-      "Browse available compute by type, location, and price",
-      "Deploy workloads in minutes with simple API or dashboard",
-      "Pay only for what you use — no commitments, no lock-in",
-    ],
-  },
-];
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const HowItWorksSection = () => {
+  const { t } = useLanguage();
+
+  const columns = [
+    {
+      title: t("how.providers"),
+      Icon: Server,
+      steps: [t("how.p1"), t("how.p2"), t("how.p3")],
+    },
+    {
+      title: t("how.platform"),
+      Icon: Zap,
+      steps: [t("how.pl1"), t("how.pl2"), t("how.pl3")],
+    },
+    {
+      title: t("how.renters"),
+      Icon: Terminal,
+      steps: [t("how.r1"), t("how.r2"), t("how.r3")],
+    },
+  ];
+
   return (
     <section id="how-it-works" className="bg-background py-24">
       <div className="container mx-auto px-6">
         <h2 className="text-center text-3xl font-bold text-foreground">
-          How <span className="text-primary">It Works</span>
+          {t("how.title")}
         </h2>
 
         <div className="mt-16 grid gap-8 md:grid-cols-3">

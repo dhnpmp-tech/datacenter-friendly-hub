@@ -1,12 +1,15 @@
 import { ShieldCheck, Building2, Rocket } from "lucide-react";
-
-const items = [
-  { Icon: ShieldCheck, text: "Built for SDAIA Compliance" },
-  { Icon: Building2, text: "Registered in Saudi Arabia" },
-  { Icon: Rocket, text: "Startup Weekend Riyadh 2026" },
-];
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const TrustBar = () => {
+  const { t } = useLanguage();
+
+  const items = [
+    { Icon: ShieldCheck, text: t("trust.sdaia") },
+    { Icon: Building2, text: t("trust.registered") },
+    { Icon: Rocket, text: t("trust.startup") },
+  ];
+
   return (
     <section className="bg-card py-12">
       <div className="container mx-auto px-6">

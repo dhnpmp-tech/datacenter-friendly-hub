@@ -2,9 +2,11 @@ import { motion } from "framer-motion";
 import { Slider } from "@/components/ui/slider";
 import { useGPUDetection } from "@/contexts/GPUContext";
 import DualPrice from "@/components/DualPrice";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const EarningsCalculatorSection = () => {
   const { isKnown, earnings, comparison, utilization, setUtilization } = useGPUDetection();
+  const { t } = useLanguage();
 
   if (!isKnown || !earnings || !comparison) return null;
 
@@ -22,12 +24,12 @@ const EarningsCalculatorSection = () => {
           <div className="relative rounded-2xl border border-border bg-card p-7 overflow-hidden">
             <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-primary to-green-500" />
             <p className="text-xs uppercase tracking-[1.5px] text-muted-foreground mb-4">
-              Your Estimated Earnings
+              {t("calc.your_earnings")}
             </p>
 
             <div className="my-5">
               <div className="flex justify-between mb-2">
-                <span className="text-xs text-muted-foreground">Utilization</span>
+                <span className="text-xs text-muted-foreground">{t("calc.utilization")}</span>
                 <span className="text-xs font-semibold text-primary">{utilization}%</span>
               </div>
               <Slider
@@ -41,13 +43,13 @@ const EarningsCalculatorSection = () => {
               <p className="text-5xl font-extrabold bg-gradient-to-br from-green-400 to-green-500 bg-clip-text text-transparent leading-tight">
                 <DualPrice usd={earnings.monthlyEarning} period="/mo" primaryClassName="bg-gradient-to-br from-green-400 to-green-500 bg-clip-text text-transparent" secondaryClassName="text-muted-foreground" />
               </p>
-              <p className="text-sm text-muted-foreground mt-1">estimated monthly earnings</p>
+              <p className="text-sm text-muted-foreground mt-1">{t("calc.monthly_earnings")}</p>
             </div>
 
             <div className="grid grid-cols-3 gap-3">
-              <StatBox label="Market Rate/hr" usd={earnings.marketPrice} period="/hr" />
-              <StatBox label="Your Cut (85%)" usd={earnings.yourCut} period="/hr" />
-              <StatBox label="Power Cost/hr" usd={-earnings.hourlyPowerCost} period="/hr" negative />
+              <StatBox label={t("calc.market_rate")} usd={earnings.marketPrice} period="/hr" />
+              <StatBox label={t("calc.your_cut")} usd={earnings.yourCut} period="/hr" />
+              <StatBox label={t("calc.power_cost")} usd={-earnings.hourlyPowerCost} period="/hr" negative />
             </div>
           </div>
 
@@ -55,7 +57,7 @@ const EarningsCalculatorSection = () => {
           <div className="relative rounded-2xl border border-border bg-card p-7 overflow-hidden mt-5">
             <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-primary to-green-500" />
             <p className="text-xs uppercase tracking-[1.5px] text-muted-foreground mb-4">
-              DC1 vs Hosting Elsewhere
+              {t("calc.dc1_vs")}
             </p>
 
             <div className="flex h-9 rounded-lg overflow-hidden my-3">
@@ -74,18 +76,18 @@ const EarningsCalculatorSection = () => {
 
             <div className="mt-4 text-center rounded-lg bg-green-500/10 p-3">
               <span className="text-sm font-semibold text-green-400">
-                DC1 earns you <DualPrice usd={comparison.dc1.net - comparison.us.net} period="/mo" primaryClassName="text-green-400 font-bold" secondaryClassName="text-green-400/60" /> more than US-based hosting
+                {t("calc.dc1_earns_more")} <DualPrice usd={comparison.dc1.net - comparison.us.net} period="/mo" primaryClassName="text-green-400 font-bold" secondaryClassName="text-green-400/60" /> {t("calc.more_than_us")}
               </span>
             </div>
           </div>
 
-          {/* CTA to scroll to signup */}
+          {/* CTA */}
           <div className="text-center mt-8">
             <a
               href="#early-access"
               className="inline-block rounded-lg bg-green-500 px-10 py-3.5 text-sm font-bold text-black transition-all hover:brightness-110 hover:shadow-[0_0_30px_rgba(34,197,94,0.3)]"
             >
-              Start Earning — Join Below
+              {t("calc.start_earning")}
             </a>
           </div>
         </motion.div>
@@ -117,9 +119,9 @@ function CompRow({ platform, tag, net, power, highlight, noBorder }: {
     <div className={`flex justify-between items-center py-3.5 ${noBorder ? "" : "border-b border-border"}`}>
       <div className="font-medium text-sm">
         {highlight ? "🟢" : "⚪"} {platform}
-        {tag && <span className="ml-2 inline-block bg-green-500/20 text-green-400 px-2 py-0.5 rounded-full text-[11px] font-semibold">{tag}</span>}
+        {tag && <span className="ms-2 inline-block bg-green-500/20 text-green-400 px-2 py-0.5 rounded-full text-[11px] font-semibold">{tag}</span>}
       </div>
-      <div className="text-right">
+      <div className="text-end">
         <p className={`font-semibold ${highlight ? "text-green-400" : ""}`}>
           <DualPrice usd={net} period="/mo" primaryClassName={highlight ? "text-green-400" : "text-foreground"} secondaryClassName="text-muted-foreground" />
         </p>

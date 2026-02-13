@@ -14,7 +14,7 @@ const CurrencySwitcher = () => {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <button className="flex items-center gap-1 rounded-md border border-border/50 bg-card px-2.5 py-1 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground hover:border-border focus:outline-none">
-          {currency.flag} {currency.code}
+          {currency.flag} {currency.symbol.trim()}
           <ChevronDown className="h-3 w-3 opacity-60" />
         </button>
       </DropdownMenuTrigger>

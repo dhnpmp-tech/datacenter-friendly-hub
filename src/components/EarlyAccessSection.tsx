@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { trackEvent } from "@/lib/analytics";
 import { useGPUDetection } from "@/contexts/GPUContext";
 import { ENERGY } from "@/lib/gpu-data";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const hearAboutOptions = [
   "Twitter/X",
@@ -48,20 +49,17 @@ const EarlyAccessSection = () => {
   const [submitting, setSubmitting] = useState(false);
   const { toast } = useToast();
   const { isKnown, gpuDisplayName, gpuInfo, detectedGPU } = useGPUDetection();
+  const { t, lang } = useLanguage();
 
-  // Auto-fill GPU fields when GPU is detected
   useEffect(() => {
     if (!isKnown || !gpuInfo) return;
-    // Auto-fill GPU models input
     const gpuInput = document.getElementById("gpuModels") as HTMLInputElement | null;
     if (gpuInput && !gpuInput.value) gpuInput.value = gpuDisplayName;
-    // Auto-check GPU checkbox
     const gpuCheckbox = document.querySelector('input[name="hardwareType"][value="GPU"]') as HTMLInputElement | null;
     if (gpuCheckbox && !gpuCheckbox.checked) gpuCheckbox.checked = true;
-    // Auto-fill power cost
     const powerInput = document.getElementById("powerCost") as HTMLInputElement | null;
     if (powerInput && !powerInput.value) {
-      const monthlyCostSAR = Math.round((gpuInfo.tdp * 1.3 / 1000) * ENERGY.dc1 * 720 * 3.75); // convert USD to SAR
+      const monthlyCostSAR = Math.round((gpuInfo.tdp * 1.3 / 1000) * ENERGY.dc1 * 720 * 3.75);
       powerInput.value = String(monthlyCostSAR);
     }
   }, [isKnown, gpuInfo, gpuDisplayName, tab]);
@@ -76,7 +74,6 @@ const EarlyAccessSection = () => {
     const email = (formData.get("email") as string).trim();
     const fullName = (formData.get("fullName") as string).trim();
 
-    // Check duplicate email
     const { count } = await supabase
       .from("waitlist")
       .select("*", { count: "exact", head: true })
@@ -84,15 +81,14 @@ const EarlyAccessSection = () => {
 
     if (count && count > 0) {
       toast({
-        title: "Already registered",
-        description: "This email is already on our waitlist. We'll be in touch soon!",
+        title: t("waitlist.already_registered"),
+        description: t("waitlist.already_registered_desc"),
         variant: "destructive",
       });
       setSubmitting(false);
       return;
     }
 
-    // Build hardware_type array for providers
     const hwTypes = formData.getAll("hardwareType") as string[];
 
     const insertData = {
@@ -125,14 +121,12 @@ const EarlyAccessSection = () => {
       return;
     }
 
-    // Notify via edge function (fire-and-forget)
     supabase.functions.invoke("notify-signup", { body: { record: insertData } }).catch(console.error);
-
-    await trackEvent("form_submit", { type: tab, email });
+    await trackEvent("form_submit", { type: tab, email, lang });
 
     toast({
-      title: "You're on the list!",
-      description: "We'll be in touch within 48 hours.",
+      title: t("waitlist.on_the_list"),
+      description: t("waitlist.be_in_touch"),
     });
 
     form.reset();
@@ -150,10 +144,10 @@ const EarlyAccessSection = () => {
           className="mx-auto max-w-2xl"
         >
           <h2 className="text-center text-3xl font-bold text-foreground">
-            Join the Waitlist
+            {t("waitlist.title")}
           </h2>
           <p className="mt-3 text-center text-base text-muted-foreground">
-            Be among the first to access decentralized compute in Saudi Arabia.
+            {t("waitlist.subtitle")}
           </p>
 
           {/* Tabs */}
@@ -168,7 +162,7 @@ const EarlyAccessSection = () => {
               }`}
             >
               <Server size={16} />
-              I Have Hardware
+              {t("waitlist.i_have_hardware")}
             </button>
             <button
               type="button"
@@ -180,44 +174,43 @@ const EarlyAccessSection = () => {
               }`}
             >
               <Terminal size={16} />
-              I Need Compute
+              {t("waitlist.i_need_compute")}
             </button>
           </div>
 
           {/* Form */}
           <form onSubmit={handleSubmit} className="mt-8 space-y-5">
-            {/* Shared fields */}
             <div className="grid gap-5 sm:grid-cols-2">
               <div>
-                <label htmlFor="fullName" className={labelClass}>Full Name *</label>
-                <input id="fullName" name="fullName" type="text" required className={inputClass} placeholder="Your full name" />
+                <label htmlFor="fullName" className={labelClass}>{t("waitlist.full_name")} *</label>
+                <input id="fullName" name="fullName" type="text" required className={inputClass} placeholder={t("placeholder.full_name")} />
               </div>
               <div>
-                <label htmlFor="email" className={labelClass}>Email *</label>
-                <input id="email" name="email" type="email" required className={inputClass} placeholder="you@company.com" />
+                <label htmlFor="email" className={labelClass}>{t("waitlist.email")} *</label>
+                <input id="email" name="email" type="email" required className={inputClass} placeholder={t("placeholder.company_email")} />
               </div>
             </div>
 
             <div className="grid gap-5 sm:grid-cols-2">
               <div>
-                <label htmlFor="phone" className={labelClass}>Phone</label>
-                <input id="phone" name="phone" type="tel" className={inputClass} placeholder="+966" />
+                <label htmlFor="phone" className={labelClass}>{t("waitlist.phone")}</label>
+                <input id="phone" name="phone" type="tel" className={inputClass} placeholder={t("placeholder.phone")} />
               </div>
               <div>
-                <label htmlFor="company" className={labelClass}>Company / Organization</label>
-                <input id="company" name="company" type="text" className={inputClass} placeholder="Your company" />
+                <label htmlFor="company" className={labelClass}>{t("waitlist.company")}</label>
+                <input id="company" name="company" type="text" className={inputClass} placeholder={t("placeholder.company")} />
               </div>
             </div>
 
             {tab === "provider" ? (
               <>
                 <div>
-                  <label htmlFor="city" className={labelClass}>City *</label>
-                  <input id="city" name="city" type="text" required className={inputClass} placeholder="e.g. Riyadh, Jeddah" />
+                  <label htmlFor="city" className={labelClass}>{t("waitlist.city")} *</label>
+                  <input id="city" name="city" type="text" required className={inputClass} placeholder={t("placeholder.city")} />
                 </div>
 
                 <div>
-                  <label className={labelClass}>Hardware Type *</label>
+                  <label className={labelClass}>{t("waitlist.hardware_type")} *</label>
                   <div className="flex flex-wrap gap-4 mt-1">
                     {hardwareTypes.map((hw) => (
                       <label key={hw} className="flex items-center gap-2 text-sm text-foreground cursor-pointer">
@@ -235,26 +228,26 @@ const EarlyAccessSection = () => {
 
                 <div className="grid gap-5 sm:grid-cols-2">
                   <div>
-                    <label htmlFor="gpuModels" className={labelClass}>GPU Models</label>
-                    <input id="gpuModels" name="gpuModels" type="text" className={inputClass} placeholder="e.g. RTX 4090, A100" />
+                    <label htmlFor="gpuModels" className={labelClass}>{t("waitlist.gpu_models")}</label>
+                    <input id="gpuModels" name="gpuModels" type="text" className={inputClass} placeholder={t("placeholder.gpu_models")} />
                   </div>
                   <div>
-                    <label htmlFor="units" className={labelClass}>Number of Units</label>
-                    <input id="units" name="units" type="number" min="1" className={inputClass} placeholder="e.g. 10" />
+                    <label htmlFor="units" className={labelClass}>{t("waitlist.num_units")}</label>
+                    <input id="units" name="units" type="number" min="1" className={inputClass} placeholder={t("placeholder.units")} />
                   </div>
                 </div>
 
                 <div>
-                  <label htmlFor="powerCost" className={labelClass}>Monthly Power Cost (SAR)</label>
-                  <input id="powerCost" name="powerCost" type="number" min="0" className={inputClass} placeholder="e.g. 5000" />
+                  <label htmlFor="powerCost" className={labelClass}>{t("waitlist.power_cost")}</label>
+                  <input id="powerCost" name="powerCost" type="number" min="0" className={inputClass} placeholder={t("placeholder.power_cost")} />
                 </div>
               </>
             ) : (
               <>
                 <div>
-                  <label htmlFor="useCase" className={labelClass}>Use Case *</label>
+                  <label htmlFor="useCase" className={labelClass}>{t("waitlist.use_case")} *</label>
                   <select id="useCase" name="useCase" required className={selectClass} defaultValue="">
-                    <option value="" disabled>Select use case</option>
+                    <option value="" disabled>{t("select.use_case")}</option>
                     {useCaseOptions.map((opt) => (
                       <option key={opt} value={opt}>{opt}</option>
                     ))}
@@ -263,13 +256,13 @@ const EarlyAccessSection = () => {
 
                 <div className="grid gap-5 sm:grid-cols-2">
                   <div>
-                    <label htmlFor="gpuPreference" className={labelClass}>GPU Preference</label>
-                    <input id="gpuPreference" name="gpuPreference" type="text" className={inputClass} placeholder="e.g. A100, H100, RTX 4090" />
+                    <label htmlFor="gpuPreference" className={labelClass}>{t("waitlist.gpu_preference")}</label>
+                    <input id="gpuPreference" name="gpuPreference" type="text" className={inputClass} placeholder={t("placeholder.gpu_preference")} />
                   </div>
                   <div>
-                    <label htmlFor="budget" className={labelClass}>Estimated Monthly Budget</label>
+                    <label htmlFor="budget" className={labelClass}>{t("waitlist.budget")}</label>
                     <select id="budget" name="budget" className={selectClass} defaultValue="">
-                      <option value="" disabled>Select budget range</option>
+                      <option value="" disabled>{t("select.budget")}</option>
                       {budgetOptions.map((opt) => (
                         <option key={opt} value={opt}>{opt}</option>
                       ))}
@@ -279,11 +272,10 @@ const EarlyAccessSection = () => {
               </>
             )}
 
-            {/* Shared bottom fields */}
             <div>
-              <label htmlFor="hearAbout" className={labelClass}>How did you hear about us?</label>
+              <label htmlFor="hearAbout" className={labelClass}>{t("waitlist.hear_about")}</label>
               <select id="hearAbout" name="hearAbout" className={selectClass} defaultValue="">
-                <option value="" disabled>Select one</option>
+                <option value="" disabled>{t("select.hear_about")}</option>
                 {hearAboutOptions.map((opt) => (
                   <option key={opt} value={opt}>{opt}</option>
                 ))}
@@ -291,13 +283,13 @@ const EarlyAccessSection = () => {
             </div>
 
             <div>
-              <label htmlFor="message" className={labelClass}>Message / Notes</label>
+              <label htmlFor="message" className={labelClass}>{t("waitlist.message")}</label>
               <textarea
                 id="message"
                 name="message"
                 rows={3}
                 className={inputClass}
-                placeholder="Anything else you'd like us to know?"
+                placeholder={t("placeholder.message")}
               />
             </div>
 
@@ -306,11 +298,11 @@ const EarlyAccessSection = () => {
               disabled={submitting}
               className="w-full rounded-lg bg-primary py-3 text-sm font-bold text-primary-foreground transition-all hover:brightness-110 hover:shadow-[0_0_30px_hsl(37_91%_55%/0.25)] disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {submitting ? "Submitting..." : "Request Early Access"}
+              {submitting ? t("waitlist.submitting") : t("waitlist.submit")}
             </button>
 
             <p className="text-center text-xs text-muted-foreground">
-              We'll reach out within 48 hours.
+              {t("waitlist.reach_out")}
             </p>
           </form>
         </motion.div>

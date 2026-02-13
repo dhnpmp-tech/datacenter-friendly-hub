@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Kufi+Arabic:wght@300;400;500;600;700;800;900&family=Noto+Naskh+Arabic:wght@400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -62,6 +62,19 @@
   html {
     scroll-behavior: smooth;
     scroll-padding-top: 5rem;
+  }
+
+  [lang="ar"] body {
+    font-family: 'Noto Kufi Arabic', 'Noto Sans Arabic', 'Arial', sans-serif;
+    direction: rtl;
+  }
+
+  .font-noto-kufi {
+    font-family: 'Noto Kufi Arabic', 'Noto Sans Arabic', 'Arial', sans-serif;
+  }
+
+  .riyal-symbol {
+    font-family: 'Noto Naskh Arabic', 'Arial', sans-serif;
   }
 }
 
