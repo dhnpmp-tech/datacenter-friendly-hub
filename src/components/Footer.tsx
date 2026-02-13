@@ -1,26 +1,27 @@
 import { Link } from "react-router-dom";
 import dc1Logo from "@/assets/dc1-logo.webp";
 import { Twitter, Linkedin } from "lucide-react";
-
-const navLinks = [
-  { label: "How It Works", href: "#how-it-works" },
-  { label: "Advantages", href: "#advantages" },
-  { label: "Early Access", href: "#early-access" },
-  { label: "Contact", href: "mailto:hello@dc1.tech" },
-];
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const Footer = () => {
+  const { t } = useLanguage();
+
+  const navLinks = [
+    { label: t("nav.how_it_works"), href: "#how-it-works" },
+    { label: t("nav.advantages"), href: "#advantages" },
+    { label: t("nav.early_access"), href: "#early-access" },
+    { label: t("footer.contact"), href: "mailto:hello@dc1.tech" },
+  ];
+
   return (
     <footer className="border-t border-border bg-background py-12">
       <div className="container mx-auto px-6">
         <div className="grid gap-10 sm:grid-cols-3">
-          {/* Left */}
           <div>
             <img src={dc1Logo} alt="DC1" className="h-10 w-auto" />
-            <p className="mt-3 text-sm text-muted-foreground">Power, Digitalized</p>
+            <p className="mt-3 text-sm text-muted-foreground">{t("footer.tagline")}</p>
           </div>
 
-          {/* Center */}
           <div className="flex flex-col items-start gap-2.5 sm:items-center">
             {navLinks.map((link) => (
               <a
@@ -35,11 +36,10 @@ const Footer = () => {
               to="/privacy"
               className="text-sm text-muted-foreground transition-colors hover:text-foreground"
             >
-              Privacy Policy
+              {t("footer.privacy")}
             </Link>
           </div>
 
-          {/* Right */}
           <div className="flex items-start gap-4 sm:justify-end">
             <a
               href="https://x.com/DC1sa"
@@ -64,10 +64,10 @@ const Footer = () => {
 
         <div className="mt-10 border-t border-border pt-6 text-center space-y-2">
           <p className="text-xs text-muted-foreground/70">
-            DC Power Solutions Company | CR 7053667775
+            {t("footer.legal")}
           </p>
           <p className="text-sm text-muted-foreground">
-            &copy; 2026 DC1 — Saudi Arabia's Compute Marketplace
+            {t("footer.copyright")}
           </p>
           <div className="flex items-center justify-center gap-4 pt-1">
             <a
@@ -104,7 +104,7 @@ const Footer = () => {
             }}
             className="text-xs text-muted-foreground/50 underline-offset-4 hover:underline hover:text-foreground transition-colors"
           >
-            Cookie Settings
+            {t("footer.cookie_settings")}
           </button>
         </div>
       </div>

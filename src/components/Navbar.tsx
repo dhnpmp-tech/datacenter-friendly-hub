@@ -3,15 +3,18 @@ import { Menu, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import dc1Logo from "@/assets/dc1-logo.webp";
 import CurrencySwitcher from "@/components/CurrencySwitcher";
-
-const navLinks = [
-  { label: "How It Works", href: "#how-it-works" },
-  { label: "Advantages", href: "#advantages" },
-  { label: "Early Access", href: "#early-access" },
-];
+import LanguageSwitcher from "@/components/LanguageSwitcher";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
+  const { t } = useLanguage();
+
+  const navLinks = [
+    { label: t("nav.how_it_works"), href: "#how-it-works" },
+    { label: t("nav.advantages"), href: "#advantages" },
+    { label: t("nav.early_access"), href: "#early-access" },
+  ];
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 border-b border-border/40 bg-background/80 backdrop-blur-xl">
@@ -32,13 +35,14 @@ const Navbar = () => {
           ))}
         </div>
 
-        <div className="hidden md:flex items-center gap-4">
+        <div className="hidden md:flex items-center gap-3">
+          <LanguageSwitcher />
           <CurrencySwitcher />
           <a
             href="#early-access"
             className="rounded-lg bg-primary px-5 py-2 text-sm font-semibold text-primary-foreground transition-all hover:brightness-110"
           >
-            Get Early Access
+            {t("nav.get_early_access")}
           </a>
         </div>
 
@@ -67,6 +71,7 @@ const Navbar = () => {
                 </a>
               ))}
               <div className="flex items-center gap-3">
+                <LanguageSwitcher />
                 <CurrencySwitcher />
               </div>
               <a
@@ -74,7 +79,7 @@ const Navbar = () => {
                 className="mt-2 inline-block rounded-lg bg-primary px-5 py-2.5 text-center text-sm font-semibold text-primary-foreground"
                 onClick={() => setOpen(false)}
               >
-                Get Early Access
+                {t("nav.get_early_access")}
               </a>
             </div>
           </motion.div>

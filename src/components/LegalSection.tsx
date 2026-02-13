@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { ChevronDown } from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const disclaimers = [
   {
@@ -35,7 +36,7 @@ const disclaimers = [
 
 const LegalSection = () => {
   const [open, setOpen] = useState(false);
-
+  const { t } = useLanguage();
   return (
     <section className="border-t border-border bg-background">
       <div className="container mx-auto px-6">
@@ -44,7 +45,7 @@ const LegalSection = () => {
           onClick={() => setOpen(!open)}
           className="flex w-full items-center justify-between py-5 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
         >
-          <span>Legal Disclaimers</span>
+          <span>{t("legal.title")}</span>
           <ChevronDown
             size={14}
             className={`transition-transform duration-200 ${open ? "rotate-180" : ""}`}
