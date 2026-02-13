@@ -1,5 +1,7 @@
 import { Link } from "react-router-dom";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, ArrowRight } from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 
 const Section = ({ title, children }: { title: string; children: React.ReactNode }) => (
   <section className="mt-12">
@@ -26,7 +28,7 @@ const Table = ({ headers, rows }: { headers?: string[]; rows: string[][] }) => (
         <thead>
           <tr>
             {headers.map((h, i) => (
-              <th key={i} className="text-left py-2.5 px-4 border-b border-border font-semibold text-foreground bg-muted/50">{h}</th>
+              <th key={i} className="text-start py-2.5 px-4 border-b border-border font-semibold text-foreground bg-muted/50">{h}</th>
             ))}
           </tr>
         </thead>
@@ -45,25 +47,30 @@ const Table = ({ headers, rows }: { headers?: string[]; rows: string[][] }) => (
 );
 
 const Ul = ({ items }: { items: string[] }) => (
-  <ul className="list-disc list-inside space-y-1.5 text-sm text-muted-foreground mb-4 ml-1">
+  <ul className="list-disc list-inside space-y-1.5 text-sm text-muted-foreground mb-4 ms-1">
     {items.map((item, i) => <li key={i}>{item}</li>)}
   </ul>
 );
 
 const Ol = ({ items }: { items: string[] }) => (
-  <ol className="list-decimal list-inside space-y-1.5 text-sm text-muted-foreground mb-4 ml-1">
+  <ol className="list-decimal list-inside space-y-1.5 text-sm text-muted-foreground mb-4 ms-1">
     {items.map((item, i) => <li key={i}>{item}</li>)}
   </ol>
 );
 
 const Privacy = () => {
+  const { t, isRTL } = useLanguage();
+
   return (
     <div className="min-h-screen bg-background">
       <div className="mx-auto max-w-3xl px-6 py-12">
-        <Link to="/" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors mb-8">
-          <ArrowLeft size={16} />
-          Back to Home
-        </Link>
+        <div className="flex items-center justify-between mb-8">
+          <Link to="/" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
+            {isRTL ? <ArrowRight size={16} /> : <ArrowLeft size={16} />}
+            {t("privacy.back")}
+          </Link>
+          <LanguageSwitcher />
+        </div>
 
         <h1 className="text-3xl font-bold text-foreground">DC1 Privacy Policy</h1>
 

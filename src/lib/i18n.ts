@@ -206,11 +206,73 @@ const translations: Record<string, Record<Lang, string>> = {
   "placeholder.power_cost": { en: "e.g. 5000", ar: "مثال: 5000" },
   "placeholder.gpu_preference": { en: "e.g. A100, H100, RTX 4090", ar: "مثال: A100, H100, RTX 4090" },
   "placeholder.message": { en: "Anything else you'd like us to know?", ar: "هل هناك شيء آخر تريد إخبارنا به؟" },
+  "placeholder.search_gpus": { en: "Search GPUs...", ar: "ابحث عن معالج رسومي..." },
+  "placeholder.select_gpu": { en: "Select your GPU...", ar: "اختر معالجك الرسومي..." },
 
   // Select options
   "select.use_case": { en: "Select use case", ar: "اختر حالة الاستخدام" },
   "select.budget": { en: "Select budget range", ar: "اختر نطاق الميزانية" },
   "select.hear_about": { en: "Select one", ar: "اختر" },
+
+  // GPU Detection Banner
+  "gpu.detected_not_main": { en: "We detected", ar: "تم اكتشاف" },
+  "gpu.not_main_suffix": { en: "— that doesn't look like your main GPU.", ar: "— لا يبدو أنه معالجك الرسومي الرئيسي." },
+  "gpu.enable_hw_accel": { en: "Enable hardware acceleration to see your real GPU's earnings.", ar: "فعّل تسريع الأجهزة لرؤية أرباح معالجك الحقيقي." },
+  "gpu.select_below_mobile": { en: "Select your GPU below to see accurate earnings.", ar: "اختر معالجك أدناه لرؤية أرباح دقيقة." },
+  "gpu.fix_it_now": { en: "Fix it now", ar: "أصلحه الآن" },
+  "gpu.select_manually": { en: "Select manually", ar: "اختر يدوياً" },
+  "gpu.no_match": { en: "No GPUs match your search", ar: "لا توجد نتائج مطابقة" },
+
+  // GPU Fix It Guide
+  "fix.title": { en: "Fix GPU Detection", ar: "إصلاح اكتشاف المعالج" },
+  "fix.step1": { en: "Enable Hardware Acceleration", ar: "فعّل تسريع الأجهزة" },
+  "fix.step2": { en: "Restart & Return", ar: "أعد التشغيل وعد" },
+  "fix.step2_desc": { en: "Restart your browser, then come back to this page. We'll detect your GPU automatically.", ar: "أعد تشغيل المتصفح ثم عد إلى هذه الصفحة. سنكتشف معالجك تلقائياً." },
+  "fix.copy_link": { en: "Copy this page link", ar: "انسخ رابط الصفحة" },
+  "fix.copied": { en: "Copied!", ar: "تم النسخ!" },
+  "fix.bookmark_tip": { en: "Tip: Bookmark this page before restarting", ar: "نصيحة: احفظ هذه الصفحة قبل إعادة التشغيل" },
+  "fix.your_browser": { en: "Your browser", ar: "متصفحك" },
+
+  // EarningsReport
+  "report.gpu_economics": { en: "GPU Economics", ar: "اقتصاديات المعالج" },
+  "report.revenue": { en: "Revenue", ar: "الإيرادات" },
+  "report.power_cost": { en: "Power Cost", ar: "تكلفة الطاقة" },
+  "report.market_rate_at": { en: "Market rate at", ar: "سعر السوق عند" },
+  "report.utilization": { en: "utilization", ar: "استخدام" },
+  "report.based_on": { en: "Based on", ar: "بناءً على" },
+  "report.custom": { en: "(custom)", ar: "(مخصص)" },
+  "report.edit_rate": { en: "Edit your rate", ar: "عدّل السعر" },
+  "report.reset": { en: "Reset", ar: "إعادة تعيين" },
+  "report.save": { en: "Save", ar: "حفظ" },
+  "report.cancel": { en: "Cancel", ar: "إلغاء" },
+  "report.running_from": { en: "Running from", ar: "التشغيل من" },
+  "report.running_on_dc1": { en: "Running on DC1", ar: "التشغيل على DC1" },
+  "report.saudi_arabia": { en: "Saudi Arabia", ar: "المملكة العربية السعودية" },
+  "report.net": { en: "Net", ar: "الصافي" },
+  "report.annual": { en: "Annual", ar: "السنوي" },
+  "report.dc1_fee": { en: "DC1 fee", ar: "رسوم DC1" },
+  "report.dc1_fee_15": { en: "DC1 fee (15%)", ar: "رسوم DC1 (15%)" },
+  "report.power": { en: "Power", ar: "الطاقة" },
+  "report.platform_fee_includes": { en: "What the 15% platform fee includes", ar: "ما تتضمنه رسوم المنصة 15%" },
+  "report.managed_billing": { en: "Managed billing — we find renters, you get paid automatically", ar: "فوترة مدارة — نجد المستأجرين، تحصل على أموالك تلقائياً" },
+  "report.security_model": { en: "3-agent security model — Guardian, Watcher, Auditor protect your hardware", ar: "نموذج أمان ثلاثي — الحارس والمراقب والمدقق يحمون أجهزتك" },
+  "report.sdaia_compliance": { en: "SDAIA compliance — we handle Saudi regulatory requirements", ar: "توافق سدايا — نتولى المتطلبات التنظيمية السعودية" },
+  "report.guaranteed_rate": { en: "Guaranteed rate — when rented, your rate is locked in", ar: "سعر مضمون — عند التأجير، يُثبت سعرك" },
+  "report.zero_infra": { en: "Zero infrastructure — no networking, hosting, or support tickets to manage", ar: "بدون بنية تحتية — لا شبكات أو استضافة أو تذاكر دعم" },
+  "report.fee_replaces": { en: "DC1's 15% fee replaces your ops team.", ar: "رسوم DC1 بنسبة 15% تحل محل فريق العمليات." },
+  "report.negative_returns": { en: "At current market rates, this GPU may not generate positive returns from compute rental. Consider joining our waitlist — we'll notify you when demand increases.", ar: "بأسعار السوق الحالية، قد لا يحقق هذا المعالج عوائد إيجابية. انضم لقائمة الانتظار — سنبلغك عند زيادة الطلب." },
+  "report.user_neg_dc1_pos": { en: "This GPU loses money at your energy rates. On DC1's Saudi energy, it becomes profitable.", ar: "هذا المعالج يخسر بأسعار طاقتك. على طاقة DC1 السعودية، يصبح مربحاً." },
+  "report.similar_returns": { en: "Similar returns — but DC1 includes managed billing, security, compliance, and demand matching. No ops team needed.", ar: "عوائد مشابهة — لكن DC1 تتضمن فوترة وأمان وامتثال ومطابقة طلب. بدون فريق عمليات." },
+
+  // Earn page tier badges
+  "tier.high": { en: "High Demand", ar: "طلب عالي" },
+  "tier.mid": { en: "Good Earner", ar: "ربح جيد" },
+  "tier.low": { en: "Marketplace Ready", ar: "جاهز للسوق" },
+  "earn.gpu_cores": { en: "GPU Cores", ar: "نوى المعالج" },
+  "earn.platform": { en: "Platform", ar: "المنصة" },
+
+  // Privacy page
+  "privacy.back": { en: "Back to Home", ar: "العودة للرئيسية" },
 };
 
 export function t(key: string, lang: Lang): string {
