@@ -84,7 +84,7 @@ const Privacy = () => {
         <P>This Privacy Policy is prepared in compliance with the <strong className="text-foreground">Personal Data Protection Law (PDPL)</strong> of the Kingdom of Saudi Arabia, enforced by SDAIA and the National Data Management Office (NDMO).</P>
 
         <Section title="1. About This Policy">
-          <P>This Privacy Policy explains how DC1 ("we," "us," or "our"), a product of DC Power Solutions Company, collects, uses, stores, and protects your personal data when you visit our website (dc1.tech / dc1.sa) or interact with our services.</P>
+          <P>This Privacy Policy explains how DC1 ("we," "us," or "our"), a product of DC Power Solutions Company, collects, uses, stores, and protects your personal data when you visit our website (dc1st.com / dc1.sa) or interact with our services.</P>
           <P>By accessing our website or submitting information through our forms, you acknowledge that you have read and understood this Privacy Policy. We will obtain your explicit consent before collecting any personal data.</P>
         </Section>
 
@@ -93,8 +93,8 @@ const Privacy = () => {
             ["Entity Name", "DC Power Solutions Company"],
             ["Commercial Registration", "7053667775"],
             ["Country", "Kingdom of Saudi Arabia"],
-            ["Contact Email", "privacy@dc1.tech"],
-            ["Data Protection Inquiries", "dpo@dc1.tech"],
+            ["Contact Email", "privacy@dc1st.com"],
+            ["Data Protection Inquiries", "dpo@dc1st.com"],
           ]} />
         </Section>
 
@@ -155,7 +155,7 @@ const Privacy = () => {
           <Sub title="5.2 Withdrawing Consent">
             <P>You may withdraw your consent at any time by:</P>
             <Ul items={[
-              "Emailing us at privacy@dc1.tech",
+              "Emailing us at privacy@dc1st.com",
               "Using the data request form on our website (when available)",
             ]} />
             <P>Withdrawal of consent does not affect the lawfulness of processing carried out before withdrawal.</P>
@@ -187,7 +187,7 @@ const Privacy = () => {
           <Sub title="6.6 How to Exercise Your Rights">
             <P>To exercise any of these rights, contact us at:</P>
             <Ul items={[
-              'Email: privacy@dc1.tech',
+              'Email: privacy@dc1st.com',
               'Subject line: "Data Subject Request — [Your Right]"',
             ]} />
             <P>We will respond to your request within <strong className="text-foreground">30 days</strong>. No account creation is required to submit a request.</P>
@@ -298,8 +298,8 @@ const Privacy = () => {
         <Section title="16. Contact Us">
           <P>For any questions, concerns, or requests related to this Privacy Policy or your personal data:</P>
           <Table rows={[
-            ["Email", "privacy@dc1.tech"],
-            ["Data Protection Officer", "dpo@dc1.tech"],
+            ["Email", "privacy@dc1st.com"],
+            ["Data Protection Officer", "dpo@dc1st.com"],
             ["Company", "DC Power Solutions Company"],
             ["Supervisory Authority", "SDAIA — sdaia.gov.sa"],
           ]} />

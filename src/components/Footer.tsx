@@ -10,7 +10,7 @@ const Footer = () => {
     { label: t("nav.how_it_works"), href: "#how-it-works" },
     { label: t("nav.advantages"), href: "#advantages" },
     { label: t("nav.early_access"), href: "#early-access" },
-    { label: t("footer.contact"), href: "mailto:hello@dc1.tech" },
+    { label: t("footer.contact"), href: "mailto:hello@dc1st.com" },
   ];
 
   return (
