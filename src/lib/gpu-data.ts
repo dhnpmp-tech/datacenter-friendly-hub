@@ -1,33 +1,37 @@
 // GPU database with power consumption, market rates, and matching patterns
+export const DC1_DISCOUNT = 0.15; // DC1 offers 15% below market to renters
+
 export interface GPUInfo {
   vram: number;
   tdp: number;
   tier: 'high' | 'mid' | 'low';
   cores: string;
-  rate: number; // $/hr market rate
+  rate: number;      // $/hr market rate (e.g. vast.ai median)
+  dc1Rate: number;   // $/hr DC1 renter rate (market × 0.85)
   utilization: number; // 0-1 global market avg
 }
 
 // Last updated: 2026-02-11T11:45Z from vast.ai live data
+// dc1Rate = market rate × (1 - DC1_DISCOUNT) — what renters pay on DC1
 export const GPU_DB: Record<string, GPUInfo> = {
-  'RTX 5090': { vram: 32, tdp: 450, tier: 'high', cores: '~21,760', rate: 0.41, utilization: 0.77 },
-  'RTX 5080': { vram: 16, tdp: 360, tier: 'mid', cores: '~10,752', rate: 0.14, utilization: 0.53 },
-  'RTX 4090': { vram: 24, tdp: 450, tier: 'high', cores: '16,384', rate: 0.33, utilization: 0.55 },
-  'RTX 4080': { vram: 16, tdp: 320, tier: 'mid', cores: '9,728', rate: 0.16, utilization: 0.53 },
-  'RTX 4070 Ti': { vram: 12, tdp: 285, tier: 'mid', cores: '7,680', rate: 0.08, utilization: 0.63 },
-  'RTX 4070': { vram: 12, tdp: 200, tier: 'mid', cores: '5,888', rate: 0.08, utilization: 0.43 },
-  'RTX 4060 Ti': { vram: 16, tdp: 160, tier: 'low', cores: '4,352', rate: 0.11, utilization: 0.65 },
-  'RTX 4060': { vram: 8, tdp: 115, tier: 'low', cores: '3,072', rate: 0.05, utilization: 0.62 },
-  'RTX 3090': { vram: 24, tdp: 350, tier: 'mid', cores: '10,496', rate: 0.14, utilization: 0.56 },
-  'RTX 3080': { vram: 10, tdp: 320, tier: 'mid', cores: '8,704', rate: 0.08, utilization: 0.48 },
-  'RTX 3070': { vram: 8, tdp: 220, tier: 'mid', cores: '5,888', rate: 0.04, utilization: 0.37 },
-  'RTX 3060': { vram: 12, tdp: 170, tier: 'low', cores: '3,584', rate: 0.05, utilization: 0.55 },
-  'A100 80GB': { vram: 80, tdp: 300, tier: 'high', cores: '6,912', rate: 0.84, utilization: 0.75 },
-  'A100 40GB': { vram: 40, tdp: 300, tier: 'high', cores: '6,912', rate: 0.63, utilization: 0.80 },
-  'H100': { vram: 80, tdp: 700, tier: 'high', cores: '14,592', rate: 1.66, utilization: 0.62 },
-  'L40S': { vram: 48, tdp: 350, tier: 'high', cores: '18,176', rate: 0.50, utilization: 0.44 },
-  'A6000': { vram: 48, tdp: 300, tier: 'mid', cores: '10,752', rate: 0.40, utilization: 0.51 },
-  'RTX A5000': { vram: 24, tdp: 230, tier: 'mid', cores: '8,192', rate: 0.17, utilization: 0.27 },
+  'RTX 5090':   { vram: 32, tdp: 450, tier: 'high', cores: '~21,760', rate: 0.42, dc1Rate: 0.36, utilization: 0.77 },
+  'RTX 5080':   { vram: 16, tdp: 360, tier: 'mid',  cores: '~10,752', rate: 0.14, dc1Rate: 0.12, utilization: 0.53 },
+  'RTX 4090':   { vram: 24, tdp: 450, tier: 'high', cores: '16,384',  rate: 0.33, dc1Rate: 0.28, utilization: 0.55 },
+  'RTX 4080':   { vram: 16, tdp: 320, tier: 'mid',  cores: '9,728',   rate: 0.16, dc1Rate: 0.14, utilization: 0.53 },
+  'RTX 4070 Ti':{ vram: 12, tdp: 285, tier: 'mid',  cores: '7,680',   rate: 0.08, dc1Rate: 0.07, utilization: 0.63 },
+  'RTX 4070':   { vram: 12, tdp: 200, tier: 'mid',  cores: '5,888',   rate: 0.08, dc1Rate: 0.07, utilization: 0.43 },
+  'RTX 4060 Ti':{ vram: 16, tdp: 160, tier: 'low',  cores: '4,352',   rate: 0.11, dc1Rate: 0.09, utilization: 0.65 },
+  'RTX 4060':   { vram: 8,  tdp: 115, tier: 'low',  cores: '3,072',   rate: 0.05, dc1Rate: 0.04, utilization: 0.62 },
+  'RTX 3090':   { vram: 24, tdp: 350, tier: 'mid',  cores: '10,496',  rate: 0.14, dc1Rate: 0.12, utilization: 0.56 },
+  'RTX 3080':   { vram: 10, tdp: 320, tier: 'mid',  cores: '8,704',   rate: 0.08, dc1Rate: 0.07, utilization: 0.48 },
+  'RTX 3070':   { vram: 8,  tdp: 220, tier: 'mid',  cores: '5,888',   rate: 0.04, dc1Rate: 0.03, utilization: 0.37 },
+  'RTX 3060':   { vram: 12, tdp: 170, tier: 'low',  cores: '3,584',   rate: 0.05, dc1Rate: 0.04, utilization: 0.55 },
+  'A100 80GB':  { vram: 80, tdp: 300, tier: 'high', cores: '6,912',   rate: 0.84, dc1Rate: 0.71, utilization: 0.75 },
+  'A100 40GB':  { vram: 40, tdp: 300, tier: 'high', cores: '6,912',   rate: 0.63, dc1Rate: 0.54, utilization: 0.80 },
+  'H100':       { vram: 80, tdp: 700, tier: 'high', cores: '14,592',  rate: 1.66, dc1Rate: 1.41, utilization: 0.62 },
+  'L40S':       { vram: 48, tdp: 350, tier: 'high', cores: '18,176',  rate: 0.50, dc1Rate: 0.43, utilization: 0.44 },
+  'A6000':      { vram: 48, tdp: 300, tier: 'mid',  cores: '10,752',  rate: 0.40, dc1Rate: 0.34, utilization: 0.51 },
+  'RTX A5000':  { vram: 24, tdp: 230, tier: 'mid',  cores: '8,192',   rate: 0.17, dc1Rate: 0.14, utilization: 0.27 },
 };
 
 export const FALLBACK_PRICES: Record<string, number> = Object.fromEntries(

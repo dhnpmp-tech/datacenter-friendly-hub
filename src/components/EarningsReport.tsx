@@ -94,6 +94,8 @@ const EarningsReport = ({ gpuName, gpuCount = 1, onCountryDetected }: EarningsRe
   if (!gpu) return null;
 
   const rate = gpu.rate;
+  const dc1Rate = gpu.dc1Rate;
+  const discountPct = Math.round(((rate - dc1Rate) / rate) * 100);
   const util = gpu.utilization;
   const tdpKw = gpu.tdp / 1000;
   const systemKw = tdpKw * OVERHEAD;
@@ -166,7 +168,32 @@ const EarningsReport = ({ gpuName, gpuCount = 1, onCountryDetected }: EarningsRe
         </p>
       </div>
 
-      {/* SECTION 1 — Revenue & Power Cost */}
+      {/* Rate Comparison Strip */}
+      <div className="border-b border-border/50 px-6 py-4 bg-muted/20">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-0">
+          <div className="flex-1 flex items-center gap-3">
+            <div className="text-center">
+              <p className="text-[10px] uppercase tracking-widest text-muted-foreground mb-1">Market Rate</p>
+              <p className="text-base font-bold text-foreground">${rate.toFixed(2)}<span className="text-xs text-muted-foreground font-normal">/hr</span></p>
+            </div>
+            <div className="flex-1 h-px bg-border/50 hidden sm:block" />
+            <div className="text-center px-3 py-1.5 rounded-lg border border-primary/30 bg-primary/5">
+              <p className="text-[10px] uppercase tracking-widest text-primary/70 mb-1">DC1 Rate</p>
+              <p className="text-base font-bold text-primary">${dc1Rate.toFixed(2)}<span className="text-xs text-primary/70 font-normal">/hr</span></p>
+            </div>
+            <div className="flex-1 h-px bg-border/50 hidden sm:block" />
+            <div className="text-center">
+              <p className="text-[10px] uppercase tracking-widest text-muted-foreground mb-1">Your Savings</p>
+              <p className="text-base font-bold" style={{ color: "hsl(var(--success))" }}>{discountPct}% below market</p>
+            </div>
+          </div>
+        </div>
+        <p className="text-[10px] text-muted-foreground/50 mt-2.5">
+          Based on vast.ai global index · Rates updated daily based on market conditions
+        </p>
+      </div>
+
+
       <div className="grid grid-cols-1 sm:grid-cols-2 border-b border-border/50">
         <div className="p-6 border-b sm:border-b-0 sm:border-e border-border/50">
           <p className="text-[10px] uppercase tracking-widest text-muted-foreground mb-3">{t("report.revenue")}</p>
