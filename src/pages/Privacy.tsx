@@ -77,21 +77,21 @@ const Privacy = () => {
         <div className="mt-4 space-y-1 text-sm text-muted-foreground">
           <p><strong className="text-foreground">Effective Date:</strong> February 11, 2026</p>
           <p><strong className="text-foreground">Last Updated:</strong> February 11, 2026</p>
-          <p><strong className="text-foreground">Data Controller:</strong> HAAK Energy Solutions Company (CR: 7041633988), Kingdom of Saudi Arabia</p>
+          <p><strong className="text-foreground">Data Controller:</strong> DC Power Solutions Company (CR: 7053667775), Kingdom of Saudi Arabia</p>
           <p><strong className="text-foreground">Supervisory Authority:</strong> Saudi Data and Artificial Intelligence Authority (SDAIA)</p>
         </div>
 
         <P>This Privacy Policy is prepared in compliance with the <strong className="text-foreground">Personal Data Protection Law (PDPL)</strong> of the Kingdom of Saudi Arabia, enforced by SDAIA and the National Data Management Office (NDMO).</P>
 
         <Section title="1. About This Policy">
-          <P>This Privacy Policy explains how DC1 ("we," "us," or "our"), a product of HAAK Energy Solutions Company, collects, uses, stores, and protects your personal data when you visit our website (dc1.tech / dc1.sa) or interact with our services.</P>
+          <P>This Privacy Policy explains how DC1 ("we," "us," or "our"), a product of DC Power Solutions Company, collects, uses, stores, and protects your personal data when you visit our website (dc1.tech / dc1.sa) or interact with our services.</P>
           <P>By accessing our website or submitting information through our forms, you acknowledge that you have read and understood this Privacy Policy. We will obtain your explicit consent before collecting any personal data.</P>
         </Section>
 
         <Section title="2. Data Controller Information">
           <Table rows={[
-            ["Entity Name", "HAAK Energy Solutions Company"],
-            ["Commercial Registration", "7041633988"],
+            ["Entity Name", "DC Power Solutions Company"],
+            ["Commercial Registration", "7053667775"],
             ["Country", "Kingdom of Saudi Arabia"],
             ["Contact Email", "privacy@dc1.tech"],
             ["Data Protection Inquiries", "dpo@dc1.tech"],
@@ -251,7 +251,7 @@ const Privacy = () => {
           <Table headers={["Recipient", "Purpose", "Safeguards"]} rows={[
             ["Database provider", "Data storage and processing", "Data Processing Agreement, encryption"],
             ["Cloudflare (hosting/CDN)", "Website delivery and security", "Standard contractual clauses"],
-            ["Team members (HAAK Energy Solutions)", "Processing applications, communication", "Access controls, NDA"],
+            ["Team members (DC Power Solutions)", "Processing applications, communication", "Access controls, NDA"],
           ]} />
           <P>All third-party processors are contractually bound to process data only as instructed and to implement appropriate security measures.</P>
         </Section>
@@ -300,7 +300,7 @@ const Privacy = () => {
           <Table rows={[
             ["Email", "privacy@dc1.tech"],
             ["Data Protection Officer", "dpo@dc1.tech"],
-            ["Company", "HAAK Energy Solutions Company"],
+            ["Company", "DC Power Solutions Company"],
             ["Supervisory Authority", "SDAIA — sdaia.gov.sa"],
           ]} />
         </Section>
@@ -310,7 +310,7 @@ const Privacy = () => {
           This Privacy Policy has been prepared in alignment with the Saudi Personal Data Protection Law (PDPL), SDAIA regulations, and NDMO data governance guidelines.
         </p>
         <p className="text-xs text-muted-foreground mt-2">
-          © 2026 HAAK Energy Solutions Company. All rights reserved.
+          © 2026 DC Power Solutions Company (CR: 7053667775). All rights reserved.
         </p>
       </div>
     </div>
