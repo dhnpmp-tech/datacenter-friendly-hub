@@ -154,7 +154,7 @@ const translations: Record<string, Record<Lang, string>> = {
   "footer.contact": { en: "Contact", ar: "تواصل معنا" },
   "footer.privacy": { en: "Privacy Policy", ar: "سياسة الخصوصية" },
   "footer.legal": { en: "DC Power Solutions Company | CR 7053667775", ar: "شركة DC لحلول الطاقة | سجل تجاري 7053667775" },
-  "footer.copyright": { en: "© 2026 DC1 — Saudi Arabia's Compute Marketplace", ar: "© 2026 DC1 — سوق الحوسبة في المملكة العربية السعودية" },
+  "footer.copyright": { en: "© 2026 DC Power Solutions Company (CR: 7053667775)", ar: "© 2026 شركة DC لحلول الطاقة (سجل تجاري: 7053667775)" },
   "footer.cookie_settings": { en: "Cookie Settings", ar: "إعدادات ملفات تعريف الارتباط" },
 
   // Legal section
