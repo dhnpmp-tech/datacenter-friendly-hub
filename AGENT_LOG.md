@@ -33,20 +33,23 @@ b279b6c — Migrate to dc1st.com meta
 - **Action:** Provider health audit, repository sync check, integration health verification
 - **Status:** 🔴 **CRITICAL REGRESSION** since last heartbeat
 - **Provider Status:**
-  - ✅ Yazan RTX 3060 Ti: **NOW DISCONNECTED** (was online at 09:59, offline since ~10:42 UTC)
-    - Last heartbeat: 10:42:19 UTC
-    - Daemon version: **STILL v1.1.0** (NOT upgraded to v3.3.0)
-    - Temp: 42°C
-  - 🔴 Rakan RTX 4060: **STILL OFFLINE** (10+ days, last Mar 1 07:51 UTC)
-- **Repository:** ✅ CLEAN (no new commits since c9150cc)
-- **MC API:** ✅ HEALTHY (uptime 18.5h, responding normally)
-- **Critical Finding:** Yazan connection was not sustained. Daemon upgrade (v1.1.0→v3.3.0) was NOT executed per Mar 10 plan.
-- **Assessment:** **Both provider daemons offline. Gate 0 has ZERO active GPU capacity.**
-- **Next:** ESCALATE immediately to Peter/Fadi — both providers need emergency restart + daemon upgrade
-- **Blockers:** 
-  - Rakan restart (10+ days offline — hardware issue or network?)
-  - Yazan daemon upgrade still pending (v1.1.0 confirmed, needs v3.3.0)
-  - Provider connectivity unstable (Yazan dropped between 09:59-10:42)
+  - 🔴 Yazan RTX 3060 Ti: **DISCONNECTED** (was online at 09:59, offline since ~10:42 UTC)
+    - Last heartbeat: 10:42:19 UTC (50+ min ago)
+    - Daemon version: **STILL v1.1.0** (upgrade attempt failed)
+    - **Assessment:** Machine restarted at 10:42 UTC to force upgrade; still offline 50+ min later. Possible hardware/network/boot issue.
+  - 🔴 Rakan RTX 4060: **OFFLINE** (10+ days, last Mar 1 07:51 UTC)
+    - Installer v2.0.0 completed but no daemon startup detected
+- **Repository:** ✅ CLEAN, synced with origin/main
+- **MC API:** ✅ HEALTHY (uptime 66544s ~18.5h, responding)
+- **Merge Conflicts:** ✅ None (no recent merge commits)
+- **Build Status:** 🟡 CHECKING (Vercel connectivity limited, last commit c9150cc deployed)
+- **Findings:**
+  1. **Zero GPU capacity:** Both providers offline (regression since 09:59 UTC)
+  2. **Daemon upgrade FAILED:** v2.0.0 installer did not trigger v3.3.0 auto-download
+  3. **Network/Boot issue:** Yazan unresponsive 50+ min post-restart (abnormal)
+- **Next:** ESCALATE to Peter/Fadi for emergency hardware health check on both machines
+- **Commit:** eb1bcf8 (critical regression alert pushed)
+- **Team Alert:** Sent via Telegram (both providers offline, requires manual intervention)
 
 ### [2026-03-11 09:58 UTC] Nexus (Heartbeat/Health Check)
 - **Action:** Divergent branch reconciliation + AGENT_LOG.md initialization + provider health audit
