@@ -1,11 +1,11 @@
 # AGENT_LOG.md - DC1 Platform Work Ledger
 
-## Current Status (March 11, 2026 11:58 UTC)
+## Current Status (March 11, 2026 12:58 UTC)
 
 **Last Stable:** d1da43e (Add dynamic GPU pricing) — 2026-03-11 morning
-**Working Directory:** CLEAN + AGENT_LOG.md (pending commit)
+**Working Directory:** CLEAN (no new commits since d83f795)
 **Build Status:** 🟡 CHECKING (need Vercel confirmation)
-**Providers Online:** 🔴 **BOTH OFFLINE** — Critical regression since 09:58 UTC
+**Providers Online:** 🔴 **BOTH OFFLINE + STALE** — No recovery in 60 minutes
 
 ---
 
@@ -28,6 +28,29 @@ b279b6c — Migrate to dc1st.com meta
 ---
 
 ## Work Entries (Newest First)
+
+### [2026-03-11 12:58 UTC] Nexus (Heartbeat/Health Check — 1h Follow-up)
+- **Action:** Provider status update, stale alert detection
+- **Status:** 🔴 **STALE — NO RECOVERY** since last heartbeat
+- **Provider Status (NO CHANGE):**
+  - 🔴 Yazan RTX 3060 Ti: **STILL DISCONNECTED**
+    - Last heartbeat: 10:42:19 UTC (80 minutes ago)
+    - Daemon version: **STILL v1.1.0** (no upgrade)
+    - **CRITICAL:** 80 min offline post-restart is extreme. Machine unresponsive.
+  - 🔴 Rakan RTX 4060: **STILL OFFLINE**
+    - Last heartbeat: Mar 1 07:51 UTC (10 days 5 hours)
+- **Repository:** ✅ CLEAN (synced d83f795)
+- **MC API:** ✅ HEALTHY (uptime 70146s ~19.5h)
+- **Assessment:** 
+  - **Zero progress in 60 minutes**
+  - **Machines require manual hardware intervention**
+  - **Daemon auto-restart/upgrade mechanism failed**
+  - **Gate 0 demo capability remains OFFLINE**
+- **Next:** ESCALATE to Peter/Fadi with hardware alarm (80+ min offline is critical failure)
+- **Blockers:** 
+  - Yazan machine must be physically accessed (check power, network, display)
+  - Rakan machine unreachable (10+ days)
+  - Provider response time critical (demo deadline 13 days away)
 
 ### [2026-03-11 11:58 UTC] Nexus (Heartbeat/Health Check — 2h Cycle)
 - **Action:** Provider health audit, repository sync check, integration health verification
