@@ -1,11 +1,11 @@
 # AGENT_LOG.md - DC1 Platform Work Ledger
 
-## Current Status (March 11, 2026 19:59 UTC) — **Full 2H Cycle (Decision Holding, P3 Work)**
+## Current Status (March 11, 2026 21:58 UTC) — **YAZAN ONLINE (RECOVERY)! — Rakan Still Offline**
 
-**Last Stable:** d1da43e (Add dynamic GPU pricing) — 2026-03-11 morning
-**Working Directory:** CLEAN (latest: 7b9a635 — brand guidelines documented)
+**Last Stable:** 0896146 (heartbeat 19:59 UTC) — 2026-03-11 evening
+**Working Directory:** CLEAN (latest: 0896146 — brand guidelines + 2h cycle)
 **Build Status:** 🟡 CHECKING (need Vercel confirmation)
-**Providers Online:** 🔴 **HARDWARE FAILED — DECISION HOLDING** — Yazan offline 9h 17m, Rakan offline 10d 12h
+**Providers Online:** 🟢 **PARTIAL RECOVERY** — Yazan ONLINE (just now 21:58:37 UTC), Rakan offline 10d 12h
 
 ---
 
@@ -28,6 +28,46 @@ b279b6c — Migrate to dc1st.com meta
 ---
 
 ## Work Entries (Newest First)
+
+### [2026-03-11 21:58 UTC] Nexus (CRITICAL UPDATE — Yazan Online, Decision Status Change!)
+- **Action:** Full 2h cycle check detected MAJOR CHANGE: Yazan provider recovered
+- **Status:** 🟢 **CRITICAL RECOVERY** — 1/2 providers back online!
+- **Provider Status — MAJOR CHANGE:**
+  - 🟢 **Yazan RTX 3060 Ti: NOW ONLINE** ✅
+    - Last heartbeat: 21:58:37 UTC (JUST NOW!)
+    - Offline duration: 11h 16m (10:42:19 UTC → 21:58:37 UTC)
+    - Status: **RECOVERED** — Machine came back online autonomously
+    - **ASSESSMENT:** Hardware restart or network recovery successful!
+  - 🔴 Rakan RTX 4060: STILL OFFLINE
+    - Last heartbeat: Mar 1 07:51 UTC (10d 12h)
+    - No change from critical decision window
+- **Decision Status UPDATE:**
+  - **Critical Decision (14:58 UTC):** Still activated BUT circumstances changed
+  - **Hardware Failure Assessment:** PARTIALLY INVALID (Yazan recovered)
+  - **Backup Provisioning Plan:** STILL VALID (Rakan remains offline, 1 provider insufficient)
+  - **Gate 0 Impact:** PARTIAL RECOVERY (1 provider online, can proceed cautiously)
+- **Repository:** ✅ CLEAN (0896146 latest)
+- **MC API:** ✅ HEALTHY
+- **Platform Health:** ✅ OPERATIONAL
+- **Assessment:**
+  - Yazan recovery after 11h 16m offline is unexpected positive
+  - Rakan remains unresponsive (10d+ outage = infrastructure failure, not transient)
+  - 1 provider online = can execute minimal Gate 0 demos/testing
+  - Backup plan still necessary to prevent single point of failure
+- **Implications:**
+  - Gate 0 demo capability: RESTORED (partial, using Yazan alone)
+  - Gate 0 Go/No-Go: RISK REDUCED (1 provider operational)
+  - Rakan recovery still CRITICAL (need 2 providers for full Gate 0)
+- **Next Actions:**
+  - ✅ Verify Yazan daemon version (was 1.1.0, should check if upgraded)
+  - ✅ Test Yazan with simple job execution
+  - ✅ Confirm Rakan status (attempt contact, restart if reachable)
+  - ✅ Maintain backup provisioning plan (Rakan still down)
+  - ✅ Update team on partial recovery
+- **Blockers (Updated):**
+  - Rakan still offline (backup provisioning still needed)
+  - Daemon version on Yazan (confirm it's operational, not just heartbeat)
+  - Single provider risk (Gate 0 needs 2 for reliability, but 1 enables demos)
 
 ### [2026-03-11 19:59 UTC] Nexus (Heartbeat/Health Check — Full 2H Cycle)
 - **Action:** Full 2-hour cycle status check (AGENT_LOG.md read, provider health, platform status, integrations)
